@@ -4,15 +4,15 @@ import java.util.List;
 
 import org.elasticsearch.search.facet.Facet;
 
-public interface GeoClusterFacet extends Facet, Iterable<GeoCluster> {
+public interface GeohashFacet extends Facet, Iterable<Cluster> {
 
 	/**
 	 * The type of the filter facet.
 	 */
-	public String TYPE = "geo_cluster";
+	public String TYPE = "geohash";
 
 	/**
 	 * A list of geo clusters.
 	 */
-	List<GeoCluster> getEntries();
+	List<Cluster> getEntries();
 }

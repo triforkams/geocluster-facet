@@ -5,12 +5,13 @@ import java.io.IOException;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.search.facet.FacetBuilder;
 
-public class GeoClusterFacetBuilder extends FacetBuilder {
+// TODO: remove?
+public class GeohashFacetBuilder extends FacetBuilder {
 
 	private final String fieldName;
 	private final double factor;
 
-	public GeoClusterFacetBuilder(String name, String fieldName, double factor) {
+	public GeohashFacetBuilder(String name, String fieldName, double factor) {
 		super(name);
 		this.fieldName = fieldName;
 		this.factor = factor;
@@ -19,7 +20,7 @@ public class GeoClusterFacetBuilder extends FacetBuilder {
 	@Override
 	public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
 		builder.startObject(name);
-		builder.startObject(GeoClusterFacet.TYPE);
+		builder.startObject(GeohashFacet.TYPE);
 		builder.field("field", fieldName);
 		builder.field("factor", factor);
 		builder.endObject();

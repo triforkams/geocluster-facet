@@ -8,6 +8,9 @@ import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.common.unit.DistanceUnit;
 
+/**
+ * Modified from https://github.com/zenobase/geocluster-facet/blob/master/src/main/java/com/zenobase/search/facet/geocluster/GeoPoints.java
+ */
 public class GeoPoints {
 
 	private GeoPoints() {

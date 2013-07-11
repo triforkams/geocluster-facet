@@ -9,16 +9,16 @@ import org.elasticsearch.index.fielddata.IndexGeoPointFieldData;
 import org.elasticsearch.search.facet.FacetExecutor;
 import org.elasticsearch.search.facet.InternalFacet;
 
-public class GeoClusterFacetExecutor extends FacetExecutor {
+public class GeohashFacetExecutor extends FacetExecutor {
 
 	private final IndexGeoPointFieldData<?> indexFieldData;
 	private final double factor;
-	private final GeoClusterBuilder builder;
+	private final ClusterBuilder builder;
 
-	public GeoClusterFacetExecutor(IndexGeoPointFieldData<?> indexFieldData, double factor) {
+	public GeohashFacetExecutor(IndexGeoPointFieldData<?> indexFieldData, double factor) {
 		this.indexFieldData = indexFieldData;
 		this.factor = factor;
-		this.builder = new GeoClusterBuilder(factor);
+		this.builder = new ClusterBuilder(factor);
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class GeoClusterFacetExecutor extends FacetExecutor {
 
 	@Override
 	public InternalFacet buildFacet(String facetName) {
-		return new InternalGeoClusterFacet(facetName, factor, builder.build());
+		return new InternalGeohashFacet(facetName, factor, builder.build());
 	}
 
 	private class Collector extends FacetExecutor.Collector {

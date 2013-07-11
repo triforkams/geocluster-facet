@@ -16,9 +16,9 @@ import org.elasticsearch.common.xcontent.XContentBuilderString;
 import org.elasticsearch.search.facet.Facet;
 import org.elasticsearch.search.facet.InternalFacet;
 
-public class InternalGeoClusterFacet extends InternalFacet implements GeoClusterFacet {
+public class InternalGeohashFacet extends InternalFacet implements GeohashFacet {
 
-	private static final BytesReference STREAM_TYPE = new HashedBytesArray("geoCluster".getBytes());
+	private static final BytesReference STREAM_TYPE = new HashedBytesArray("geohashGroup".getBytes());
 
 	private static InternalFacet.Stream STREAM = new Stream() {
 
@@ -33,13 +33,13 @@ public class InternalGeoClusterFacet extends InternalFacet implements GeoCluster
 	}
 
 	private double factor;
-	private List<GeoCluster> entries;
+	private List<Cluster> entries;
 
-	InternalGeoClusterFacet() {
+	InternalGeohashFacet() {
 
 	}
 
-	public InternalGeoClusterFacet(String name, double factor, List<GeoCluster> entries) {
+	public InternalGeohashFacet(String name, double factor, List<Cluster> entries) {
 		super(name);
 		this.factor = factor;
 		this.entries = entries;
@@ -56,32 +56,32 @@ public class InternalGeoClusterFacet extends InternalFacet implements GeoCluster
 	}
 
 	@Override
-	public List<GeoCluster> getEntries() {
+	public List<Cluster> getEntries() {
 		return ImmutableList.copyOf(entries);
 	}
 
 	@Override
-	public Iterator<GeoCluster> iterator() {
+	public Iterator<Cluster> iterator() {
 		return getEntries().iterator();
 	}
 
 	@Override
 	public Facet reduce(List<Facet> facets) {
-		GeoClusterReducer reducer = new GeoClusterReducer(factor);
-		List<GeoCluster> reduced = reducer.reduce(flatMap(facets));
-		return new InternalGeoClusterFacet(getName(), factor, reduced);
+		ClusterReducer reducer = new ClusterReducer();
+		List<Cluster> reduced = reducer.reduce(flatMap(facets));
+		return new InternalGeohashFacet(getName(), factor, reduced);
 	}
 
-	private List<GeoCluster> flatMap(Iterable<Facet> facets) {
-		List<GeoCluster> entries = Lists.newArrayList();
+	private List<Cluster> flatMap(Iterable<Facet> facets) {
+		List<Cluster> entries = Lists.newArrayList();
 		for (Facet facet : facets) {
-			entries.addAll(((GeoClusterFacet) facet).getEntries());
+			entries.addAll(((GeohashFacet) facet).getEntries());
 		}
 		return entries;
 	}
 
-	public static InternalGeoClusterFacet readGeoClusterFacet(StreamInput in) throws IOException {
-		InternalGeoClusterFacet facet = new InternalGeoClusterFacet();
+	public static InternalGeohashFacet readGeoClusterFacet(StreamInput in) throws IOException {
+		InternalGeohashFacet facet = new InternalGeohashFacet();
 		facet.readFrom(in);
 		return facet;
 	}
@@ -92,7 +92,7 @@ public class InternalGeoClusterFacet extends InternalFacet implements GeoCluster
 		factor = in.readDouble();
 		entries = Lists.newArrayList();
 		for (int i = 0, max = in.readVInt(); i < max; ++i) {
-			entries.add(GeoCluster.readFrom(in));
+			entries.add(Cluster.readFrom(in));
 		}
 	}
 
@@ -101,7 +101,7 @@ public class InternalGeoClusterFacet extends InternalFacet implements GeoCluster
 		super.writeTo(out);
 		out.writeDouble(factor);
 		out.writeVInt(entries.size());
-		for (GeoCluster entry : entries) {
+		for (Cluster entry : entries) {
 			entry.writeTo(out);
 		}
 	}
@@ -125,7 +125,7 @@ public class InternalGeoClusterFacet extends InternalFacet implements GeoCluster
 		builder.field(Fields._TYPE, TYPE);
 		builder.field(Fields.FACTOR, factor);
 		builder.startArray(Fields.CLUSTERS);
-		for (GeoCluster entry : entries) {
+		for (Cluster entry : entries) {
 			toXContent(entry, builder);
 		}
 		builder.endArray();
@@ -133,7 +133,7 @@ public class InternalGeoClusterFacet extends InternalFacet implements GeoCluster
 		return builder;
 	}
 
-	private static void toXContent(GeoCluster entry, XContentBuilder builder) throws IOException {
+	private static void toXContent(Cluster entry, XContentBuilder builder) throws IOException {
 		builder.startObject();
 		builder.field(Fields.TOTAL, entry.size());
 		toXContent(entry.center(), Fields.CENTER, builder);

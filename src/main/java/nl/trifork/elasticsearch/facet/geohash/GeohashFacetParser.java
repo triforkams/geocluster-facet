@@ -14,18 +14,21 @@ import org.elasticsearch.search.facet.FacetParser;
 import org.elasticsearch.search.facet.FacetPhaseExecutionException;
 import org.elasticsearch.search.internal.SearchContext;
 
-public class GeoClusterFacetParser extends AbstractComponent implements FacetParser {
+/**
+ * Modified from the original on https://github.com/zenobase/geocluster-facet/blob/master/src/main/java/com/zenobase/search/facet/geocluster/GeoClusterFacetParser.java
+ */
+public class GeohashFacetParser extends AbstractComponent implements FacetParser {
 
 	@Inject
-	public GeoClusterFacetParser(Settings settings) {
+	public GeohashFacetParser(Settings settings) {
 		super(settings);
-		InternalGeoClusterFacet.registerStreams();
+		InternalGeohashFacet.registerStreams();
 	}
 
 	@Override
 	public String[] types() {
 		return new String[] {
-			GeoClusterFacet.TYPE
+			GeohashFacet.TYPE
 		};
 	}
 
@@ -67,6 +70,6 @@ public class GeoClusterFacetParser extends AbstractComponent implements FacetPar
             throw new FacetPhaseExecutionException(facetName, "failed to find mapping for [" + fieldName + "]");
         }
         IndexGeoPointFieldData<?> indexFieldData = context.fieldData().getForField(fieldMapper);
-		return new GeoClusterFacetExecutor(indexFieldData, factor);
+		return new GeohashFacetExecutor(indexFieldData, factor);
 	}
 }

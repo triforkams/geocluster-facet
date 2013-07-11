@@ -9,15 +9,19 @@ import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.common.unit.DistanceUnit;
 
-public class GeoBoundingBox {
+/**
+ * Modified from the original on https://github.com/zenobase/geocluster-facet/blob/master/src/main/java/com/zenobase/search/facet/geocluster/GeoBoundingBox.java
+ *
+ */
+public class BoundingBox {
 
 	private final GeoPoint topLeft, bottomRight;
 
-	public GeoBoundingBox(GeoPoint point) {
+	public BoundingBox(GeoPoint point) {
 		this(point, point);
 	}
 
-	public GeoBoundingBox(GeoPoint topLeft, GeoPoint bottomRight) {
+	public BoundingBox(GeoPoint topLeft, GeoPoint bottomRight) {
 		Preconditions.checkArgument(topLeft.getLat() >= bottomRight.getLat());
 		Preconditions.checkArgument(topLeft.getLon() <= bottomRight.getLon());
 		this.topLeft = topLeft;
@@ -37,16 +41,16 @@ public class GeoBoundingBox {
 			point.getLon() >= topLeft.getLon() && point.getLon() <= bottomRight.getLon();
 	}
 
-	public GeoBoundingBox extend(GeoPoint point) {
+	public BoundingBox extend(GeoPoint point) {
 		return extend(point, point);
 	}
 
-	public GeoBoundingBox extend(GeoBoundingBox bounds) {
+	public BoundingBox extend(BoundingBox bounds) {
 		return extend(bounds.topLeft(), bounds.bottomRight());
 	}
 
-	private GeoBoundingBox extend(GeoPoint topLeft, GeoPoint bottomRight) {
-		return contains(topLeft) && contains(bottomRight) ? this : new GeoBoundingBox(
+	private BoundingBox extend(GeoPoint topLeft, GeoPoint bottomRight) {
+		return contains(topLeft) && contains(bottomRight) ? this : new BoundingBox(
 			new GeoPoint(Math.max(topLeft().getLat(), topLeft.getLat()), Math.min(topLeft().getLon(), topLeft.getLon())),
 			new GeoPoint(Math.min(bottomRight().getLat(), bottomRight.getLat()), Math.max(bottomRight().getLon(), bottomRight.getLon())));
 	}
@@ -55,8 +59,8 @@ public class GeoBoundingBox {
 		return GeoPoints.distance(topLeft, bottomRight, unit);
 	}
 
-	public static GeoBoundingBox readFrom(StreamInput in) throws IOException {
-		return new GeoBoundingBox(GeoPoints.readFrom(in), GeoPoints.readFrom(in));
+	public static BoundingBox readFrom(StreamInput in) throws IOException {
+		return new BoundingBox(GeoPoints.readFrom(in), GeoPoints.readFrom(in));
 	}
 
 	public void writeTo(StreamOutput out) throws IOException {
@@ -66,11 +70,11 @@ public class GeoBoundingBox {
 
 	@Override
 	public boolean equals(Object that) {
-		return that instanceof GeoBoundingBox &&
-			equals((GeoBoundingBox) that);
+		return that instanceof BoundingBox &&
+			equals((BoundingBox) that);
 	}
 
-	private boolean equals(GeoBoundingBox that) {
+	private boolean equals(BoundingBox that) {
 		return GeoPoints.equals(topLeft, that.topLeft()) &&
 			GeoPoints.equals(bottomRight, that.bottomRight());
 	}
