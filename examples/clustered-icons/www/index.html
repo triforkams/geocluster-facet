@@ -1,0 +1,37 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="jquery-ui-1.10.0.custom.min.css">
+    <style type="text/css">
+        html, body{
+            height:100%;
+            margin:0px;
+            padding:0px;
+            width:100%;
+        }
+        #map{
+            height:100%;
+            width:100%;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="map"></div>
+
+
+    <script type="text/javascript" src="jquery-1.9.1.js"></script>
+
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript">
+
+    $(document).ready(function() {
+
+        initialize('map');
+
+    });
+
+    </script>
+</body>
+</html>
