@@ -108,9 +108,9 @@ function fetchFacets() {
 }
 
 function groupIcon(groupSize) {
-    return groupSize == 1?
-    "http://www.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png":
-    "http://www.google.com/intl/en_us/mapfiles/ms/micons/red-dot.png";
+    return groupSize > 1?
+        'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.0|0|FF8429|16|b|' + groupSize:
+        'https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|FF8429|16|b|';
 }
 
 
