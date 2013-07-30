@@ -8,7 +8,7 @@ Original project: https://github.com/zenobase/geocluster-facet
 License
 -------
 
-```
+
 This software is licensed under the Apache 2 license, quoted below.
 
 Copyright 2012-2013 Trifork Amsterdam BV
