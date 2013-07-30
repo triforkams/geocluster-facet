@@ -2,12 +2,31 @@ Geohash Facet Plugin for elasticsearch
 ==========================================
 
 Original project: https://github.com/zenobase/geocluster-facet
-```
+
+Versions
+--------
+
+<table>
+    <thead>
+		<tr>
+			<th>geocluster-facet</th>
+			<th>elasticsearch</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>master</td>
+			<td>0.90.2</td>
+		</tr>
+	</tbody>
+</table>
+
 
 
 License
 -------
 
+```
 
 This software is licensed under the Apache 2 license, quoted below.
 
