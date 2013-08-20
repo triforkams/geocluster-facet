@@ -66,9 +66,9 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 	}
 
 	@Override
-	public Facet reduce(List<Facet> facets) {
+	public Facet reduce(ReduceContext context) {
 		ClusterReducer reducer = new ClusterReducer();
-		List<Cluster> reduced = reducer.reduce(flatMap(facets));
+		List<Cluster> reduced = reducer.reduce(flatMap(context.facets()));
 		return new InternalGeohashFacet(getName(), factor, reduced);
 	}
 
