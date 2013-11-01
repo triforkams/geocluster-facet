@@ -17,7 +17,7 @@ Versions
 	</thead>
 	<tbody>
 		<tr>
-			<td>master</td>
+			<td>0.0.8</td>
 			<td>0.90.3</td>
 		</tr>
 		<tr>
