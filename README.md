@@ -3,7 +3,14 @@ Geohash Facet Plugin for elasticsearch
 
 Original project: https://github.com/zenobase/geocluster-facet
 
-For installation & usage see [this blog post](http://blog.trifork.com/2013/08/01/server-side-clustering-of-geo-points-on-a-map-using-elasticsearch/).
+Installation: run
+
+```
+bin/plugin --url https://github.com/triforkams/geohash-facet/releases/download/geohash-facet-0.0.9/geohash-facet-0.0.9.jar --install geohash-facet
+```
+
+
+For usage see [this blog post](http://blog.trifork.com/2013/08/01/server-side-clustering-of-geo-points-on-a-map-using-elasticsearch/).
 
 Versions
 --------
