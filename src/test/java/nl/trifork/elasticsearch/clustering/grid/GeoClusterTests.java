@@ -12,10 +12,9 @@ import nl.trifork.elasticsearch.facet.geohash.Cluster;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.io.stream.BytesStreamInput;
 import org.elasticsearch.common.io.stream.BytesStreamOutput;
-import org.junit.Ignore;
 import org.testng.annotations.Test;
 
-@Ignore
+// TODO: implement
 public class GeoClusterTests {
 
 }
