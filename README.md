@@ -6,7 +6,7 @@ Original project: https://github.com/zenobase/geocluster-facet
 Installation: run
 
 ```
-bin/plugin --url https://github.com/triforkams/geohash-facet/releases/download/geohash-facet-0.0.9/geohash-facet-0.0.9.jar --install geohash-facet
+bin/plugin --url https://github.com/triforkams/geohash-facet/releases/download/geohash-facet-0.0.10/geohash-facet-0.0.10.jar --install geohash-facet
 ```
 
 
