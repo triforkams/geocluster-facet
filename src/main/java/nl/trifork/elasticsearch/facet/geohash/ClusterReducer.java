@@ -13,7 +13,7 @@ public class ClusterReducer {
         for (Cluster cluster : clusters) {
             String clusterGeohash = cluster.clusterGeohash();
             if (map.containsKey(clusterGeohash)) {
-                map.get(clusterGeohash).merge(cluster);
+                map.put(clusterGeohash, map.get(clusterGeohash).merge(cluster));
             }
             else {
                 map.put(clusterGeohash, cluster);

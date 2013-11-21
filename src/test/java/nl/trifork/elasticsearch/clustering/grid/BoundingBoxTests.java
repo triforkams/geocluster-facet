@@ -8,7 +8,7 @@ import nl.trifork.elasticsearch.facet.geohash.BoundingBox;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.testng.annotations.Test;
 
-public class GeoBoundingBoxTests {
+public class BoundingBoxTests {
 
 	@Test
 	public void testSize() {
