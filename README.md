@@ -3,7 +3,7 @@ Geohash Facet Plugin for elasticsearch
 
 Original project: https://github.com/zenobase/geocluster-facet
 
-Installation: run
+Installation (latest version): run
 
 ```
 bin/plugin --url https://github.com/triforkams/geohash-facet/releases/download/geohash-facet-0.0.10/geohash-facet-0.0.10.jar --install geohash-facet
@@ -23,6 +23,10 @@ Versions
 		</tr>
 	</thead>
 	<tbody>
+		<tr>
+			<td>0.0.10</td>
+			<td>0.90.6+</td>
+		</tr>
 		<tr>
 			<td>0.0.9</td>
 			<td>0.90.5</td>
