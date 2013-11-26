@@ -12,11 +12,13 @@ public class GeohashFacetExecutor extends FacetExecutor {
 
 	private final IndexGeoPointFieldData<?> indexFieldData;
 	private final double factor;
+    private final boolean showGeohashCell;
 	private final ClusterBuilder builder;
 
-	public GeohashFacetExecutor(IndexGeoPointFieldData<?> indexFieldData, double factor) {
+	public GeohashFacetExecutor(IndexGeoPointFieldData<?> indexFieldData, double factor, boolean showGeohashCell) {
 		this.indexFieldData = indexFieldData;
 		this.factor = factor;
+        this.showGeohashCell = showGeohashCell;
 		this.builder = new ClusterBuilder(factor);
 	}
 
@@ -27,7 +29,7 @@ public class GeohashFacetExecutor extends FacetExecutor {
 
 	@Override
 	public InternalFacet buildFacet(String facetName) {
-		return new InternalGeohashFacet(facetName, factor, builder.build());
+		return new InternalGeohashFacet(facetName, factor, showGeohashCell, builder.build());
 	}
 
 	private class Collector extends FacetExecutor.Collector {

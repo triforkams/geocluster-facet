@@ -47,6 +47,7 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
 
 		String fieldName = null;
 		double factor = 0.1;
+        boolean showGeohashCell = false;
 
 		String currentName = parser.currentName();
 		XContentParser.Token token;
@@ -58,6 +59,8 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
 					fieldName = parser.text();
 				} else if ("factor".equals(currentName)) {
 					factor = parser.doubleValue();
+				} else if ("show_geohash_cell".equals(currentName)) {
+					showGeohashCell = parser.booleanValue();
 				}
 			}
 		}
@@ -70,6 +73,6 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
             throw new FacetPhaseExecutionException(facetName, "failed to find mapping for [" + fieldName + "]");
         }
         IndexGeoPointFieldData<?> indexFieldData = context.fieldData().getForField(fieldMapper);
-		return new GeohashFacetExecutor(indexFieldData, factor);
+		return new GeohashFacetExecutor(indexFieldData, factor, showGeohashCell);
 	}
 }

@@ -8,6 +8,7 @@ import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.bytes.HashedBytesArray;
 import org.elasticsearch.common.collect.ImmutableList;
 import org.elasticsearch.common.collect.Lists;
+import org.elasticsearch.common.geo.GeoHashUtils;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -28,20 +29,22 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 		}
 	};
 
-	public static void registerStreams() {
+    public static void registerStreams() {
 		Streams.registerStream(STREAM, STREAM_TYPE);
 	}
 
 	private double factor;
+    private boolean showGeohashCell;
 	private List<Cluster> entries;
 
 	InternalGeohashFacet() {
 
 	}
 
-	public InternalGeohashFacet(String name, double factor, List<Cluster> entries) {
+	public InternalGeohashFacet(String name, double factor, boolean showGeohashCell, List<Cluster> entries) {
 		super(name);
 		this.factor = factor;
+        this.showGeohashCell =showGeohashCell;
 		this.entries = entries;
 	}
 
@@ -69,7 +72,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 	public Facet reduce(ReduceContext context) {
 		ClusterReducer reducer = new ClusterReducer();
 		List<Cluster> reduced = reducer.reduce(flatMap(context.facets()));
-		return new InternalGeohashFacet(getName(), factor, reduced);
+		return new InternalGeohashFacet(getName(), factor, showGeohashCell, reduced);
 	}
 
 	private List<Cluster> flatMap(Iterable<Facet> facets) {
@@ -117,6 +120,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 		final XContentBuilderString BOTTOM_RIGHT = new XContentBuilderString("bottom_right");
 		final XContentBuilderString LAT = new XContentBuilderString("lat");
 		final XContentBuilderString LON = new XContentBuilderString("lon");
+		final XContentBuilderString GEOHASH_CELL = new XContentBuilderString("geohash_cell");
 	}
 
 	@Override
@@ -133,16 +137,29 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 		return builder;
 	}
 
-	private static void toXContent(Cluster entry, XContentBuilder builder) throws IOException {
+	private void toXContent(Cluster cluster, XContentBuilder builder) throws IOException {
 		builder.startObject();
-		builder.field(Fields.TOTAL, entry.size());
-		toXContent(entry.center(), Fields.CENTER, builder);
-		if (entry.size() > 1) {
-			toXContent(entry.bounds().topLeft(), Fields.TOP_LEFT, builder);
-			toXContent(entry.bounds().bottomRight(), Fields.BOTTOM_RIGHT, builder);
+		builder.field(Fields.TOTAL, cluster.size());
+		toXContent(cluster.center(), Fields.CENTER, builder);
+		if (cluster.size() > 1) {
+			toXContent(cluster.bounds().topLeft(), Fields.TOP_LEFT, builder);
+			toXContent(cluster.bounds().bottomRight(), Fields.BOTTOM_RIGHT, builder);
 		}
+        if (showGeohashCell) {
+            addGeohashCell(cluster, builder);
+        }
 		builder.endObject();
 	}
+
+    private void addGeohashCell(Cluster cluster, XContentBuilder builder) throws IOException {
+        builder.startObject(Fields.GEOHASH_CELL);
+        GeoPoint geohashCellTopLeft = new GeoPoint();
+        GeoPoint geohashCellBottomRight = new GeoPoint();
+        GeoHashUtils.decodeCell(cluster.clusterGeohash(), geohashCellTopLeft, geohashCellBottomRight);
+        toXContent(geohashCellTopLeft, Fields.TOP_LEFT, builder);
+        toXContent(geohashCellBottomRight, Fields.BOTTOM_RIGHT, builder);
+        builder.endObject();
+    }
 
 	private static void toXContent(GeoPoint point, XContentBuilderString field, XContentBuilder builder) throws IOException {
 		builder.startObject(field);

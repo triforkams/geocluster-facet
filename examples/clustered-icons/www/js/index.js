@@ -1,6 +1,7 @@
 
 var map;
 var markers = [];
+var geohashCells = [];
 
 function clearMarkers() {
     while(markers.length){
@@ -15,6 +16,26 @@ function addMarker(lat, lon, title, icon) {
         title: title,
         icon: icon,
         shadow: null
+    }));
+}
+
+function clearGeohashCells() {
+    while(geohashCells.length){
+        geohashCells.pop().setMap(null);
+    }
+}
+
+function addGeohashCell(geohashCell) {
+    geohashCells.push(new google.maps.Rectangle({
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35,
+        map: map,
+        bounds: new google.maps.LatLngBounds(
+            new google.maps.LatLng(geohashCell.top_left.lat, geohashCell.top_left.lon),
+            new google.maps.LatLng(geohashCell.bottom_right.lat, geohashCell.bottom_right.lon))
     }));
 }
 
@@ -82,7 +103,8 @@ function fetchFacets() {
                 places: {
                     geohash: {
                         field: "location",
-                        factor: f
+                        factor: f,
+                        show_geohash_cell: true
                     }
                 }
             }
@@ -91,18 +113,22 @@ function fetchFacets() {
     )
     .done(function(data){
         clearMarkers();
+        clearGeohashCells();
+
         var clusters = data.facets.places.clusters;
          console.log('received ' + clusters.length + ' clusters');
         for (var i = 0; i < clusters.length; i++) {
 
-                addMarker(
-                        clusters[i].center.lat,
-                        clusters[i].center.lon,
-                        clusters[i].total == 1?
-                            "single item @" + clusters[i].center.lat + ", " + clusters[i].center.lon:
-                            "cluster (" + clusters[i].total + ") @" + clusters[i].center.lat + ", " + clusters[i].center.lon,
-                        groupIcon(clusters[i].total)
-                );
+            addMarker(
+                    clusters[i].center.lat,
+                    clusters[i].center.lon,
+                    clusters[i].total == 1?
+                        "single item @" + clusters[i].center.lat + ", " + clusters[i].center.lon:
+                        "cluster (" + clusters[i].total + ") @" + clusters[i].center.lat + ", " + clusters[i].center.lon,
+                    groupIcon(clusters[i].total)
+            );
+            addGeohashCell(clusters[i].geohash_cell);
+
         }
     });
 }
