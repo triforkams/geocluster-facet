@@ -35,16 +35,18 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 
 	private double factor;
     private boolean showGeohashCell;
+    private boolean showDocuments;
 	private List<Cluster> entries;
 
 	InternalGeohashFacet() {
 
 	}
 
-	public InternalGeohashFacet(String name, double factor, boolean showGeohashCell, List<Cluster> entries) {
+	public InternalGeohashFacet(String name, double factor, boolean showGeohashCell, boolean showDocuments, List<Cluster> entries) {
 		super(name);
 		this.factor = factor;
-        this.showGeohashCell =showGeohashCell;
+        this.showGeohashCell = showGeohashCell;
+        this.showDocuments = showDocuments;
 		this.entries = entries;
 	}
 
@@ -72,7 +74,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 	public Facet reduce(ReduceContext context) {
 		ClusterReducer reducer = new ClusterReducer();
 		List<Cluster> reduced = reducer.reduce(flatMap(context.facets()));
-		return new InternalGeohashFacet(getName(), factor, showGeohashCell, reduced);
+		return new InternalGeohashFacet(getName(), factor, showGeohashCell, showDocuments, reduced);
 	}
 
 	private List<Cluster> flatMap(Iterable<Facet> facets) {
@@ -121,6 +123,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 		final XContentBuilderString LAT = new XContentBuilderString("lat");
 		final XContentBuilderString LON = new XContentBuilderString("lon");
 		final XContentBuilderString GEOHASH_CELL = new XContentBuilderString("geohash_cell");
+        final XContentBuilderString DOC_ID = new XContentBuilderString("doc_id");
 	}
 
 	@Override
@@ -144,7 +147,9 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 		if (cluster.size() > 1) {
 			toXContent(cluster.bounds().topLeft(), Fields.TOP_LEFT, builder);
 			toXContent(cluster.bounds().bottomRight(), Fields.BOTTOM_RIGHT, builder);
-		}
+		} else if (showDocuments) {
+			builder.field(Fields.DOC_ID, cluster.docId());
+        }
         if (showGeohashCell) {
             addGeohashCell(cluster, builder);
         }
