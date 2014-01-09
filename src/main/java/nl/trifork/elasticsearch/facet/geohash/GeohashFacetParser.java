@@ -7,6 +7,7 @@ import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.fielddata.IndexGeoPointFieldData;
+import org.elasticsearch.index.fielddata.IndexFieldData;
 import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.search.facet.FacetExecutor;
 import org.elasticsearch.search.facet.FacetExecutor.Mode;
@@ -48,6 +49,7 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
 		String fieldName = null;
 		double factor = 0.1;
         boolean showGeohashCell = false;
+        boolean showDocuments = false;
 
 		String currentName = parser.currentName();
 		XContentParser.Token token;
@@ -61,7 +63,9 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
 					factor = parser.doubleValue();
 				} else if ("show_geohash_cell".equals(currentName)) {
 					showGeohashCell = parser.booleanValue();
-				}
+				} else if ("show_documents".equals(currentName)) {
+                    showDocuments = parser.booleanValue();
+                }
 			}
 		}
 
@@ -73,6 +77,12 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
             throw new FacetPhaseExecutionException(facetName, "failed to find mapping for [" + fieldName + "]");
         }
         IndexGeoPointFieldData<?> indexFieldData = context.fieldData().getForField(fieldMapper);
-		return new GeohashFacetExecutor(indexFieldData, factor, showGeohashCell);
+        
+        FieldMapper<?> idFieldMapper = context.smartNameFieldMapper("_uid");
+        if (idFieldMapper == null) {
+            throw new FacetPhaseExecutionException(facetName, "failed to find mapping for [_id]");
+        }
+        IndexFieldData<?> idIndexFieldData = context.fieldData().getForField(idFieldMapper);
+		return new GeohashFacetExecutor(indexFieldData, idIndexFieldData, factor, showGeohashCell, showDocuments);
 	}
 }
