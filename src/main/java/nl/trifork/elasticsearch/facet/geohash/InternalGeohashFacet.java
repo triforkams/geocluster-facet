@@ -93,6 +93,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 	public void readFrom(StreamInput in) throws IOException {
 		super.readFrom(in);
 		factor = in.readDouble();
+        showGeohashCell = in .readBoolean();
 		entries = Lists.newArrayList();
 		for (int i = 0, max = in.readVInt(); i < max; ++i) {
 			entries.add(Cluster.readFrom(in));
@@ -103,11 +104,35 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 	public void writeTo(StreamOutput out) throws IOException {
 		super.writeTo(out);
 		out.writeDouble(factor);
+        out.writeBoolean(showGeohashCell);
 		out.writeVInt(entries.size());
 		for (Cluster entry : entries) {
 			entry.writeTo(out);
 		}
 	}
+
+
+    @Override
+    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+        builder.startObject(getName());
+        builder.field(Fields._TYPE, TYPE);
+        builder.field(Fields.FACTOR, factor);
+        builder.startArray(Fields.CLUSTERS);
+        for (Cluster entry : entries) {
+            toXContent(entry, builder);
+        }
+        builder.endArray();
+        builder.endObject();
+        return builder;
+    }
+
+    public double factor() {
+        return factor;
+    }
+
+    public boolean showGeohashCell() {
+        return showGeohashCell;
+    }
 
 	private interface Fields {
 
@@ -121,20 +146,6 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 		final XContentBuilderString LAT = new XContentBuilderString("lat");
 		final XContentBuilderString LON = new XContentBuilderString("lon");
 		final XContentBuilderString GEOHASH_CELL = new XContentBuilderString("geohash_cell");
-	}
-
-	@Override
-	public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-		builder.startObject(getName());
-		builder.field(Fields._TYPE, TYPE);
-		builder.field(Fields.FACTOR, factor);
-		builder.startArray(Fields.CLUSTERS);
-		for (Cluster entry : entries) {
-			toXContent(entry, builder);
-		}
-		builder.endArray();
-		builder.endObject();
-		return builder;
 	}
 
 	private void toXContent(Cluster cluster, XContentBuilder builder) throws IOException {
