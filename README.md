@@ -25,7 +25,7 @@ Versions
 	<tbody>
 		<tr>
 			<td>0.0.12</td>
-			<td>0.90.6+</td>
+			<td>0.90.6+, 1.0.0+</td>
 		</tr>
 		<tr>
 			<td>0.0.9</td>
