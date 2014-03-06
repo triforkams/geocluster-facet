@@ -80,7 +80,10 @@ Parameters
 		<tr>
             <th>factor</th>
         	<td>Controls the amount of clustering, from 0.0 (don't cluster any points) to 1.0 (create a single cluster containing all points).
-        	Defaults to 0.1. The value determines the size of the cells used to cluster together points</td>
+        	Defaults to 0.1. The value determines the size of the cells used to cluster together points.
+        	Starting from version 0.0.14, the clustering is computed using a bit-string geohash
+        	instead of the traditional alphanumeric geohash. This gives you more fine grained selection
+        	of the level of clustering.</td>
         </tr>
 		<tr>
             <th>show_geohash_cell</th>
