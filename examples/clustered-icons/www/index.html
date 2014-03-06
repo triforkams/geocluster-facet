@@ -14,13 +14,16 @@
         }
     </style>
 
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
 </head>
 <body>
+    <div id="slider"></div>
     <div id="map"></div>
 
 
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
     <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript">
 
@@ -28,6 +31,15 @@
 
         initialize('map');
 
+        $(function() {
+            $( "#slider" ).slider({ min: 0, max: 60, value: 0 });
+            $( "#slider" ).on("slidechange", function (event, ui) {
+
+                var bits = $( "#slider" ).slider( "option", "value" );
+                factor = 1 - (bits + 0.0) / 60;
+                fetchFacets();
+            });
+        });
     });
 
     </script>

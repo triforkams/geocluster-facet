@@ -2,6 +2,7 @@
 var map;
 var markers = [];
 var geohashCells = [];
+var factor = 1.0;
 
 function clearMarkers() {
     while(markers.length){
@@ -39,39 +40,10 @@ function addGeohashCell(geohashCell) {
     }));
 }
 
-/**
- *  Adjust this to tune the clustering behavior
- */
-var zoom2digits = {
-    21: 12,
-    20: 9,
-    19: 8,
-    18: 8,
-    17: 7,
-    16: 7,
-    15: 7,
-    14: 6,
-    13: 6,
-    12: 6,
-    11: 5,
-    10: 5,
-    9: 4,
-    8: 4,
-    7: 3,
-    6: 3,
-    5: 3,
-    4: 2,
-    3: 2,
-    2: 2,
-    1: 1,
-    0: 1
-};
-
 function fetchFacets() {
     var ne = map.getBounds().getNorthEast();
     var sw = map.getBounds().getSouthWest();
-    var f = 1 - zoom2digits[map.zoom] / 12;
-    console.log("querying with factor " + f);
+    console.log("querying with factor " + factor);
     $.ajax({
 
         url: "http://" + window.location.hostname + ":9200/idx/objects/_search?search_type=count",
@@ -103,7 +75,7 @@ function fetchFacets() {
                 places: {
                     geohash: {
                         field: "location",
-                        factor: f,
+                        factor: factor,
                         show_geohash_cell: true
                     }
                 }
@@ -159,6 +131,5 @@ function initMap(divId){
     google.maps.event.addListener(map, 'dragend', function(){ fetchFacets(); } );
     google.maps.event.addListener(map, 'zoom_changed', function(){ fetchFacets(); } );
 
-    fetchFacets();
 }
 

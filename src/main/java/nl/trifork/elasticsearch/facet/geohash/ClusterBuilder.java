@@ -10,24 +10,21 @@ import org.elasticsearch.common.geo.GeoPoint;
  * Modified from the original on https://github.com/zenobase/geocluster-facet/blob/master/src/main/java/com/zenobase/search/facet/geocluster/GeoClusterBuilder.java
  */
 public class ClusterBuilder {
-    private static final int GEOHASH_MAX_LENGTH = 12;
 
-	private final double factor;
-	private final int prefixLength;
-	private final Map<String, Cluster> clusters = Maps.newHashMap();
+	private final int geohashBits;
+	private final Map<Long, Cluster> clusters = Maps.newHashMap();
 
 	public ClusterBuilder(double factor) {
-		this.factor = factor;
-        this.prefixLength = GEOHASH_MAX_LENGTH - (int) Math.round(factor * GEOHASH_MAX_LENGTH);
+        this.geohashBits = BinaryGeoHashUtils.MAX_PREFIX_LENGTH - (int) Math.round(factor * BinaryGeoHashUtils.MAX_PREFIX_LENGTH);
 	}
 
 	public ClusterBuilder add(GeoPoint point) {
-        String prefix = point.geohash().substring(0, prefixLength);
-        if (clusters.containsKey(prefix)) {
-            clusters.get(prefix).add(point);
+        long geohash = BinaryGeoHashUtils.encodeAsLong(point, geohashBits);
+        if (clusters.containsKey(geohash)) {
+            clusters.get(geohash).add(point);
         }
         else {
-            clusters.put(prefix, new Cluster(point, prefix));
+            clusters.put(geohash, new Cluster(point, geohash, geohashBits));
         }
 		return this;
 	}

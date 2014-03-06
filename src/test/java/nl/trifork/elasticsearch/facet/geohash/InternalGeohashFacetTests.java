@@ -20,7 +20,9 @@ public class InternalGeohashFacetTests {
                 "name",
                 0.5,
                 true,
-                Arrays.asList(new Cluster(Places.DENVER, Places.DENVER.geohash()))
+                Arrays.asList(new Cluster(Places.DENVER,
+                        BinaryGeoHashUtils.encodeAsLong(Places.DENVER, BinaryGeoHashUtils.MAX_PREFIX_LENGTH),
+                        BinaryGeoHashUtils.MAX_PREFIX_LENGTH))
         );
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -35,6 +37,6 @@ public class InternalGeohashFacetTests {
         assertThat(deserialized.showGeohashCell(), is(facet.showGeohashCell()));
         assertThat(deserialized.getEntries().size(), is(1));
         assertThat(deserialized.getEntries().get(0).center(), is(Places.DENVER));
-        assertThat(deserialized.getEntries().get(0).clusterGeohash(), is(Places.DENVER.geohash()));
+        assertThat(deserialized.getEntries().get(0).clusterGeohash(), is(BinaryGeoHashUtils.encodeAsLong(Places.DENVER, BinaryGeoHashUtils.MAX_PREFIX_LENGTH)));
     }
 }

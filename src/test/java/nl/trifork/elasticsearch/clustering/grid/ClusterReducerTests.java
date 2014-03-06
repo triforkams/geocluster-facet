@@ -1,5 +1,6 @@
 package nl.trifork.elasticsearch.clustering.grid;
 
+import nl.trifork.elasticsearch.facet.geohash.BinaryGeoHashUtils;
 import nl.trifork.elasticsearch.facet.geohash.Cluster;
 import nl.trifork.elasticsearch.facet.geohash.ClusterReducer;
 import org.testng.annotations.BeforeMethod;
@@ -25,7 +26,9 @@ public class ClusterReducerTests {
     @Test
     public void testOneCluster() throws Exception {
 
-        Iterable<Cluster> clusters = Arrays.asList(new Cluster(DENVER, "9xj6js7bxch6"));
+        Iterable<Cluster> clusters = Arrays.asList(new Cluster(DENVER,
+                BinaryGeoHashUtils.encodeAsLong(DENVER, BinaryGeoHashUtils.MAX_PREFIX_LENGTH),
+                BinaryGeoHashUtils.MAX_PREFIX_LENGTH));
 
         List<Cluster> reduced = clusterReducer.reduce(clusters);
 
@@ -36,8 +39,12 @@ public class ClusterReducerTests {
     public void testTwoClustersWithDifferentGeohashes() throws Exception {
 
         Iterable<Cluster> clusters = Arrays.asList(
-                new Cluster(DENVER, "9xj6js7bxch6"),
-                new Cluster(LAS_VEGAS, "9qqj70pv0rrx")
+                new Cluster(DENVER,
+                        BinaryGeoHashUtils.encodeAsLong(DENVER, BinaryGeoHashUtils.MAX_PREFIX_LENGTH),
+                        BinaryGeoHashUtils.MAX_PREFIX_LENGTH),
+                new Cluster(LAS_VEGAS,
+                        BinaryGeoHashUtils.encodeAsLong(LAS_VEGAS, BinaryGeoHashUtils.MAX_PREFIX_LENGTH),
+                        BinaryGeoHashUtils.MAX_PREFIX_LENGTH)
         );
 
         List<Cluster> reduced = clusterReducer.reduce(clusters);
@@ -50,8 +57,12 @@ public class ClusterReducerTests {
     public void testTwoClustersWithSameGeohash() throws Exception {
 
         Iterable<Cluster> clusters = Arrays.asList(
-                new Cluster(DENVER, "9"),
-                new Cluster(LAS_VEGAS, "9")
+                new Cluster(DENVER,
+                        BinaryGeoHashUtils.encodeAsLong(DENVER, 4),
+                        4),
+                new Cluster(LAS_VEGAS,
+                        BinaryGeoHashUtils.encodeAsLong(LAS_VEGAS, 4),
+                        4)
         );
 
         List<Cluster> reduced = clusterReducer.reduce(clusters);

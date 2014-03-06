@@ -9,9 +9,9 @@ import java.util.Map;
 public class ClusterReducer {
 
 	public List<Cluster> reduce(Iterable<Cluster> clusters) {
-        Map<String, Cluster> map = Maps.newHashMap();
+        Map<Long, Cluster> map = Maps.newHashMap();
         for (Cluster cluster : clusters) {
-            String clusterGeohash = cluster.clusterGeohash();
+            long clusterGeohash = cluster.clusterGeohash();
             if (map.containsKey(clusterGeohash)) {
                 map.put(clusterGeohash, map.get(clusterGeohash).merge(cluster));
             }

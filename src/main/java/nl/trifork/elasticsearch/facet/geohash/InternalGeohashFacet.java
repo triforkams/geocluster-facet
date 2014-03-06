@@ -166,7 +166,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
         builder.startObject(Fields.GEOHASH_CELL);
         GeoPoint geohashCellTopLeft = new GeoPoint();
         GeoPoint geohashCellBottomRight = new GeoPoint();
-        GeoHashUtils.decodeCell(cluster.clusterGeohash(), geohashCellTopLeft, geohashCellBottomRight);
+        BinaryGeoHashUtils.decodeCell(cluster.clusterGeohash(), cluster.clusterGeohashBits(), geohashCellTopLeft, geohashCellBottomRight);
         toXContent(geohashCellTopLeft, Fields.TOP_LEFT, builder);
         toXContent(geohashCellBottomRight, Fields.BOTTOM_RIGHT, builder);
         builder.endObject();
