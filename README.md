@@ -19,25 +19,50 @@ Versions
     <thead>
 		<tr>
 			<th>geohash-facet</th>
-			<th>elasticsearch</th>
+			<th>elasticsearch compatibility</th>
+			<th>notes</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
+			<td>0.0.14</td>
+			<td>1.0.0+</td>
+			<td>implemented https://github.com/triforkams/geohash-facet/issues/7</td>
+		</tr>
+		<tr>
+			<td>0.0.13</td>
+			<td>0.90.6+, 1.0.0+</td>
+			<td>bug fixing, added a facet builder for use on the client side</td>
+		</tr>
+		<tr>
 			<td>0.0.12</td>
 			<td>0.90.6+, 1.0.0+</td>
+			<td>implemented https://github.com/triforkams/geohash-facet/issues/4</td>
+		</tr>
+		<tr>
+			<td>0.0.11</td>
+			<td>0.90.6+, 1.0.0+</td>
+			<td>fixed https://github.com/triforkams/geohash-facet/issues/3</td>
+		</tr>
+		<tr>
+			<td>0.0.10</td>
+			<td>0.90.6+, 1.0.0+</td>
+			<td>updated to stay compatible with latest ES</td>
 		</tr>
 		<tr>
 			<td>0.0.9</td>
 			<td>0.90.5</td>
+			<td>updated to stay compatible with latest ES</td>
 		</tr>
 		<tr>
 			<td>0.0.8</td>
 			<td>0.90.3</td>
+			<td>updated to stay compatible with latest ES</td>
 		</tr>
 		<tr>
 			<td>0.0.7</td>
 			<td>0.90.2</td>
+			<td></td>
 		</tr>
 	</tbody>
 </table>
