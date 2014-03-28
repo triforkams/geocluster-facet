@@ -20,6 +20,7 @@ public class InternalGeohashFacetTests {
                 "name",
                 0.5,
                 true,
+                false,
                 Arrays.asList(new Cluster(Places.DENVER,
                         BinaryGeoHashUtils.encodeAsLong(Places.DENVER, BinaryGeoHashUtils.MAX_PREFIX_LENGTH),
                         BinaryGeoHashUtils.MAX_PREFIX_LENGTH))

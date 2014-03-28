@@ -19,6 +19,7 @@ public class Cluster {
     private int size;
 	private GeoPoint center;
     private long clusterGeohash;
+    private String docId;
 	private BoundingBox bounds;
 
     /**
@@ -26,7 +27,12 @@ public class Cluster {
      * @param geohashBits - number of meaningful bits of the geohash. Values: 0 to {@link nl.trifork.elasticsearch.facet.geohash.BinaryGeoHashUtils#MAX_PREFIX_LENGTH}
      */
 	public Cluster(GeoPoint point, long clusterGeohash, int geohashBits) {
-        this(1, point, clusterGeohash, geohashBits, new BoundingBox(point));
+        this(1, point, clusterGeohash, geohashBits, new String(), new BoundingBox(point));
+
+	}
+
+	public Cluster(GeoPoint point, long clusterGeohash, int geohashBits, String docId) {
+        this(1, point, clusterGeohash, geohashBits, docId, new BoundingBox(point));
 
 	}
 
@@ -34,13 +40,14 @@ public class Cluster {
      * @param clusterGeohash - geohash of the cluster, obtained from {@link nl.trifork.elasticsearch.facet.geohash.BinaryGeoHashUtils#encodeAsLong(org.elasticsearch.common.geo.GeoPoint, int)}
      * @param geohashBits - number of meaningful bits of the geohash. Values: 0 to {@link nl.trifork.elasticsearch.facet.geohash.BinaryGeoHashUtils#MAX_PREFIX_LENGTH}
      */
-	public Cluster(int size, GeoPoint center, long clusterGeohash, int geohashBits, BoundingBox bounds) {
+	public Cluster(int size, GeoPoint center, long clusterGeohash, int geohashBits, String docId, BoundingBox bounds) {
         Preconditions.checkArgument(clusterGeohash == BinaryGeoHashUtils.encodeAsLong(center, geohashBits));
 
 		this.size = size;
 		this.center = center;
         this.clusterGeohash = clusterGeohash;
         this.geohashBits = geohashBits;
+        this.docId = docId;
 		this.bounds = bounds;
 	}
 
@@ -58,7 +65,7 @@ public class Cluster {
 
 		GeoPoint center = mean(this.center, this.size(), that.center(), that.size());
 		return new Cluster(this.size + that.size(),
-                center, this.clusterGeohash, this.geohashBits, this.bounds.extend(that.bounds()));
+                center, this.clusterGeohash, this.geohashBits, new String(), this.bounds.extend(that.bounds()));
 	}
 
 	private static GeoPoint mean(GeoPoint left, int leftWeight, GeoPoint right, int rightWeight) {
@@ -87,25 +94,37 @@ public class Cluster {
         return geohashBits;
     }
 
+    public String docId() {
+        return docId;
+    }
+
     public static Cluster readFrom(StreamInput in) throws IOException {
 		int size = in.readVInt();
 		GeoPoint center = GeoPoints.readFrom(in);
-        long clusterGeohash = in.readLong();
-        int geohashBits = in.readInt();
-		BoundingBox bounds = size > 1
-			? BoundingBox.readFrom(in)
-			: new BoundingBox(center, center);
-		return new Cluster(size, center, clusterGeohash, geohashBits, bounds);
+        long clusterGeohash = in.readVLong();
+        int geohashBits = in.readVInt();
+        BoundingBox bounds = null;
+        String docId = null;
+        if (size > 1) {
+            docId = new String();
+            bounds = BoundingBox.readFrom(in);
+        } else {
+            docId = in.readString();
+            bounds = new BoundingBox(center, center);
+        }
+		return new Cluster(size, center, clusterGeohash, geohashBits, docId, bounds);
 	}
 
 	public void writeTo(StreamOutput out) throws IOException {
 		out.writeVInt(size);
 		GeoPoints.writeTo(center, out);
-        out.writeLong(clusterGeohash);
-        out.writeInt(geohashBits);
+        out.writeVLong(clusterGeohash);
+        out.writeVInt(geohashBits);
 		if (size > 1) {
 			bounds.writeTo(out);
-		}
+		} else {
+            out.writeString(docId);
+        }
 	}
 
 	@Override

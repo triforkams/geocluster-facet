@@ -2,6 +2,7 @@ package nl.trifork.elasticsearch.facet.geohash;
 
 import java.util.Map;
 
+import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.common.collect.ImmutableList;
 import org.elasticsearch.common.collect.Maps;
 import org.elasticsearch.common.geo.GeoPoint;
@@ -12,21 +13,27 @@ import org.elasticsearch.common.geo.GeoPoint;
 public class ClusterBuilder {
 
 	private final int geohashBits;
+    private final boolean showDocuments;
 	private final Map<Long, Cluster> clusters = Maps.newHashMap();
 
-	public ClusterBuilder(double factor) {
+	public ClusterBuilder(double factor, boolean showDocuments) {
         this.geohashBits = BinaryGeoHashUtils.MAX_PREFIX_LENGTH - (int) Math.round(factor * BinaryGeoHashUtils.MAX_PREFIX_LENGTH);
+        this.showDocuments = showDocuments;
 	}
 
-	public ClusterBuilder add(GeoPoint point) {
+	public ClusterBuilder add(String docId, GeoPoint point) {
         long geohash = BinaryGeoHashUtils.encodeAsLong(point, geohashBits);
         if (clusters.containsKey(geohash)) {
             clusters.get(geohash).add(point);
         }
         else {
-            clusters.put(geohash, new Cluster(point, geohash, geohashBits));
+            clusters.put(geohash, new Cluster(point, geohash, geohashBits, docId));
         }
 		return this;
+    }
+
+	public ClusterBuilder add(GeoPoint point) {
+        return add(new String(), point);
 	}
 
 	public ImmutableList<Cluster> build() {

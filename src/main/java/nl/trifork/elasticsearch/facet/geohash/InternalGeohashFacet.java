@@ -35,16 +35,18 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 
 	private double factor;
     private boolean showGeohashCell;
+    private boolean showDocuments;
 	private List<Cluster> entries;
 
 	InternalGeohashFacet() {
 
 	}
 
-	public InternalGeohashFacet(String name, double factor, boolean showGeohashCell, List<Cluster> entries) {
+	public InternalGeohashFacet(String name, double factor, boolean showGeohashCell, boolean showDocuments, List<Cluster> entries) {
 		super(name);
 		this.factor = factor;
-        this.showGeohashCell =showGeohashCell;
+        this.showGeohashCell = showGeohashCell;
+        this.showDocuments = showDocuments;
 		this.entries = entries;
 	}
 
@@ -72,7 +74,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 	public Facet reduce(ReduceContext context) {
 		ClusterReducer reducer = new ClusterReducer();
 		List<Cluster> reduced = reducer.reduce(flatMap(context.facets()));
-		return new InternalGeohashFacet(getName(), factor, showGeohashCell, reduced);
+		return new InternalGeohashFacet(getName(), factor, showGeohashCell, showDocuments, reduced);
 	}
 
 	private List<Cluster> flatMap(Iterable<Facet> facets) {
@@ -94,8 +96,10 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 		super.readFrom(in);
 		factor = in.readDouble();
         showGeohashCell = in .readBoolean();
+        showDocuments = in.readBoolean();
+        int entriesCount = in.readVInt();
 		entries = Lists.newArrayList();
-		for (int i = 0, max = in.readVInt(); i < max; ++i) {
+		for (int i = 0, max = entriesCount; i < max; ++i) {
 			entries.add(Cluster.readFrom(in));
 		}
 	}
@@ -105,6 +109,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 		super.writeTo(out);
 		out.writeDouble(factor);
         out.writeBoolean(showGeohashCell);
+        out.writeBoolean(showDocuments);
 		out.writeVInt(entries.size());
 		for (Cluster entry : entries) {
 			entry.writeTo(out);
@@ -134,6 +139,10 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
         return showGeohashCell;
     }
 
+    public boolean showDocuments() {
+        return showDocuments;
+    }
+
 	private interface Fields {
 
 		final XContentBuilderString _TYPE = new XContentBuilderString("_type");
@@ -146,6 +155,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 		final XContentBuilderString LAT = new XContentBuilderString("lat");
 		final XContentBuilderString LON = new XContentBuilderString("lon");
 		final XContentBuilderString GEOHASH_CELL = new XContentBuilderString("geohash_cell");
+        final XContentBuilderString DOC_ID = new XContentBuilderString("doc_id");
 	}
 
 	private void toXContent(Cluster cluster, XContentBuilder builder) throws IOException {
@@ -155,7 +165,9 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 		if (cluster.size() > 1) {
 			toXContent(cluster.bounds().topLeft(), Fields.TOP_LEFT, builder);
 			toXContent(cluster.bounds().bottomRight(), Fields.BOTTOM_RIGHT, builder);
-		}
+		} else if (showDocuments) {
+			builder.field(Fields.DOC_ID, cluster.docId());
+        }
         if (showGeohashCell) {
             addGeohashCell(cluster, builder);
         }
