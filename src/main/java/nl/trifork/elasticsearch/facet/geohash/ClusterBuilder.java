@@ -13,12 +13,10 @@ import org.elasticsearch.common.geo.GeoPoint;
 public class ClusterBuilder {
 
 	private final int geohashBits;
-    private final boolean showDocuments;
 	private final Map<Long, Cluster> clusters = Maps.newHashMap();
 
-	public ClusterBuilder(double factor, boolean showDocuments) {
+	public ClusterBuilder(double factor) {
         this.geohashBits = BinaryGeoHashUtils.MAX_PREFIX_LENGTH - (int) Math.round(factor * BinaryGeoHashUtils.MAX_PREFIX_LENGTH);
-        this.showDocuments = showDocuments;
 	}
 
 	public ClusterBuilder add(String docId, GeoPoint point) {
@@ -27,13 +25,19 @@ public class ClusterBuilder {
             clusters.get(geohash).add(point);
         }
         else {
-            clusters.put(geohash, new Cluster(point, geohash, geohashBits, docId));
+            if (docId == null) {
+
+                clusters.put(geohash, new Cluster(point, geohash, geohashBits));
+            } else {
+
+                clusters.put(geohash, new Cluster(point, geohash, geohashBits, docId));
+            }
         }
 		return this;
     }
 
 	public ClusterBuilder add(GeoPoint point) {
-        return add(new String(), point);
+        return add(null, point);
 	}
 
 	public ImmutableList<Cluster> build() {

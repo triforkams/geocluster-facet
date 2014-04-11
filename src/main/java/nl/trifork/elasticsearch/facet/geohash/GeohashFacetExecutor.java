@@ -30,7 +30,7 @@ public class GeohashFacetExecutor extends FacetExecutor {
 		this.factor = factor;
         this.showGeohashCell = showGeohashCell;
         this.showDocuments = showDocuments;
-		this.builder = new ClusterBuilder(factor, showDocuments);
+		this.builder = new ClusterBuilder(factor);
 	}
 
 	@Override
