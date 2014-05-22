@@ -2,7 +2,6 @@ package nl.trifork.elasticsearch.facet.geohash;
 
 import java.io.IOException;
 
-import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.elasticsearch.index.fielddata.GeoPointValues;
 import org.elasticsearch.index.fielddata.IndexGeoPointFieldData;
@@ -20,16 +19,16 @@ public class GeohashFacetExecutor extends FacetExecutor {
 	private final IndexFieldData<?> idIndexFieldData;
 	private final double factor;
     private final boolean showGeohashCell;
-    private final boolean showDocuments;
+    private final boolean showDocumentId;
 	private final ClusterBuilder builder;
 	
 	public GeohashFacetExecutor(IndexGeoPointFieldData<?> indexFieldData, IndexFieldData<?> idIndexFieldData, 
-			                    double factor, boolean showGeohashCell, boolean showDocuments) {
+			                    double factor, boolean showGeohashCell, boolean showDocumentId) {
 		this.indexFieldData = indexFieldData;
 		this.idIndexFieldData = idIndexFieldData;
 		this.factor = factor;
         this.showGeohashCell = showGeohashCell;
-        this.showDocuments = showDocuments;
+        this.showDocumentId = showDocumentId;
 		this.builder = new ClusterBuilder(factor);
 	}
 
@@ -40,7 +39,7 @@ public class GeohashFacetExecutor extends FacetExecutor {
 
 	@Override
 	public InternalFacet buildFacet(String facetName) {
-		return new InternalGeohashFacet(facetName, factor, showGeohashCell, showDocuments, builder.build());
+		return new InternalGeohashFacet(facetName, factor, showGeohashCell, showDocumentId, builder.build());
 	}
 
 	private class Collector extends FacetExecutor.Collector {
@@ -70,7 +69,7 @@ public class GeohashFacetExecutor extends FacetExecutor {
             for (int i = 0; i < length; i++) {
             	GeoPoint gp = GeoPoints.copy(values.nextValue()); // nextValue() may recycle GeoPoint instances!
             	
-                if(showDocuments) {
+                if(showDocumentId) {
                     builder.add(_id, gp);
                 } else {
                     builder.add(gp);

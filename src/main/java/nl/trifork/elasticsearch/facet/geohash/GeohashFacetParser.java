@@ -49,7 +49,7 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
 		String fieldName = null;
 		double factor = 0.1;
         boolean showGeohashCell = false;
-        boolean showDocuments = false;
+        boolean showDocumentId = false;
 
 		String currentName = parser.currentName();
 		XContentParser.Token token;
@@ -63,8 +63,8 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
 					factor = parser.doubleValue();
 				} else if ("show_geohash_cell".equals(currentName)) {
 					showGeohashCell = parser.booleanValue();
-				} else if ("show_documents".equals(currentName)) {
-                    showDocuments = parser.booleanValue();
+				} else if ("show_doc_id".equals(currentName)) {
+                    showDocumentId = parser.booleanValue();
                 }
 			}
 		}
@@ -83,6 +83,6 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
             throw new FacetPhaseExecutionException(facetName, "failed to find mapping for [_id]");
         }
         IndexFieldData<?> idIndexFieldData = context.fieldData().getForField(idFieldMapper);
-		return new GeohashFacetExecutor(indexFieldData, idIndexFieldData, factor, showGeohashCell, showDocuments);
+		return new GeohashFacetExecutor(indexFieldData, idIndexFieldData, factor, showGeohashCell, showDocumentId);
 	}
 }
