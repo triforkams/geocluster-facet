@@ -96,6 +96,12 @@ Parameters
         	of the corresponding geohash cell are provided (top left and bottom right corner.
         	Defaults to false.</td>
         </tr>
+		<tr>
+            <th>show_doc_id</th>
+        	<td>Boolean. If true, for each cluster composed of a single document the document ID is returned.
+        	Defaults to false.</td>
+        </tr>
+
 	</tbody>
 </table>
 
