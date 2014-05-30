@@ -25,6 +25,11 @@ Versions
 	</thead>
 	<tbody>
 		<tr>
+			<td>0.0.15</td>
+			<td>1.0.0+</td>
+			<td>merged https://github.com/triforkams/geohash-facet/pull/6</td>
+		</tr>
+		<tr>
 			<td>0.0.14</td>
 			<td>1.0.0+</td>
 			<td>implemented https://github.com/triforkams/geohash-facet/issues/7</td>
