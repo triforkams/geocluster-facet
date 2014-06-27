@@ -114,7 +114,7 @@ Parameters
 Example
 -------
 
-Mapping:
+Mapping: all you need is to declare the field containing the location as a type `geo_point`.
 
 ```javascript
 {
