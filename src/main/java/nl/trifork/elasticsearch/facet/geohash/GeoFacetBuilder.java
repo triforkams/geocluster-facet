@@ -1,5 +1,12 @@
 package nl.trifork.elasticsearch.facet.geohash;
 
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilderException;
 import org.elasticsearch.search.facet.FacetBuilder;
@@ -12,6 +19,7 @@ public class GeoFacetBuilder extends FacetBuilder {
     private String fieldName;
     private double factor;
     private boolean showGeohashCell;
+    private boolean showDocId;
 
     /**
      * Construct a new term facet with the provided facet name.
@@ -35,6 +43,11 @@ public class GeoFacetBuilder extends FacetBuilder {
         return this;
     }
 
+    public GeoFacetBuilder showDocId(boolean showDocId) {
+        this.showDocId = showDocId;
+        return this;
+    }
+
     public GeoFacetBuilder factor(double factor) {
         this.factor = factor;
         return this;
@@ -43,7 +56,7 @@ public class GeoFacetBuilder extends FacetBuilder {
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         if (fieldName == null) {
-            throw new SearchSourceBuilderException("field/fields/script must be set on terms facet for facet [" + name + "]");
+            throw new SearchSourceBuilderException("field must be set facet for facet [" + name + "]");
         }
         builder.startObject(name);
 
@@ -51,6 +64,7 @@ public class GeoFacetBuilder extends FacetBuilder {
         builder.field("field", fieldName);
         builder.field("factor", factor);
         builder.field("show_geohash_cell", showGeohashCell);
+        builder.field("show_doc_id", showDocId);
 
         builder.endObject();
         addFilterFacetAndGlobal(builder, params);

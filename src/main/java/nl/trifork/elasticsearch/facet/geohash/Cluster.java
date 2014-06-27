@@ -110,7 +110,7 @@ public class Cluster {
     public static Cluster readFrom(StreamInput in) throws IOException {
 		int size = in.readVInt();
 		GeoPoint center = GeoPoints.readFrom(in);
-        long clusterGeohash = in.readVLong();
+        long clusterGeohash = in.readLong();
         int geohashBits = in.readVInt();
         if (size > 1) {
 
@@ -134,7 +134,7 @@ public class Cluster {
 	public void writeTo(StreamOutput out) throws IOException {
 		out.writeVInt(size);
 		GeoPoints.writeTo(center, out);
-        out.writeVLong(clusterGeohash);
+        out.writeLong(clusterGeohash);
         out.writeVInt(geohashBits);
 		if (size > 1) {
 			bounds.writeTo(out);
@@ -148,28 +148,33 @@ public class Cluster {
         }
 	}
 
-	@Override
-	public boolean equals(Object that) {
-		return that instanceof Cluster &&
-			equals((Cluster) that);
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-	private boolean equals(Cluster that) {
-		return size == that.size() &&
-			GeoPoints.equals(center, that.center()) &&
-			bounds.equals(that.bounds()) &&
-            clusterGeohash == that.clusterGeohash &&
-            geohashBits == that.geohashBits;
-	}
+        Cluster cluster = (Cluster) o;
 
-	@Override
-	public int hashCode() {
-		return hashCode(size, center.toString(), clusterGeohash, bounds);
-	}
+        if (clusterGeohash != cluster.clusterGeohash) return false;
+        if (geohashBits != cluster.geohashBits) return false;
+        if (size != cluster.size) return false;
+        if (!bounds.equals(cluster.bounds)) return false;
+        if (!center.equals(cluster.center)) return false;
+        if (docId != null ? !docId.equals(cluster.docId) : cluster.docId != null) return false;
 
-	private static int hashCode(Object... objects) {
-		return Arrays.hashCode(objects);
-	}
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = geohashBits;
+        result = 31 * result + size;
+        result = 31 * result + center.hashCode();
+        result = 31 * result + (int) (clusterGeohash ^ (clusterGeohash >>> 32));
+        result = 31 * result + (docId != null ? docId.hashCode() : 0);
+        result = 31 * result + bounds.hashCode();
+        return result;
+    }
 
 	@Override
 	public String toString() {
