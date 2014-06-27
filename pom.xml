@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>nl.trifork.geohash-facet</groupId>
 	<artifactId>geohash-facet</artifactId>
-	<version>0.0.16-SNAPSHOT</version>
+	<version>0.0.16</version>
 	<packaging>jar</packaging>
 
 	<dependencies>
@@ -85,7 +85,7 @@
     <scm>
         <connection>scm:git:https://github.com/triforkams/geohash-facet.git</connection>
         <developerConnection>scm:git:https://github.com/triforkams/geohash-facet.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>geohash-facet-0.0.16</tag>
   </scm>
 
 
