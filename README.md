@@ -25,18 +25,23 @@ Versions
 	</thead>
 	<tbody>
 		<tr>
+			<td>0.0.16</td>
+			<td>1.0.0</td>
+			<td>fix for https://github.com/triforkams/geohash-facet/issues/9</td>
+		</tr>
+		<tr>
 			<td>0.0.15</td>
-			<td>1.0.0+</td>
+			<td>1.0.0</td>
 			<td>merged https://github.com/triforkams/geohash-facet/pull/6</td>
 		</tr>
 		<tr>
 			<td>0.0.14</td>
-			<td>1.0.0+</td>
+			<td>1.0.0</td>
 			<td>implemented https://github.com/triforkams/geohash-facet/issues/7</td>
 		</tr>
 		<tr>
 			<td>0.0.13</td>
-			<td>0.90.6+, 1.0.0+</td>
+			<td>1.0.0</td>
 			<td>bug fixing, added a facet builder for use on the client side</td>
 		</tr>
 		<tr>
