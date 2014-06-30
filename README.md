@@ -25,6 +25,11 @@ Versions
 	</thead>
 	<tbody>
 		<tr>
+			<td>0.0.17</td>
+			<td>1.2.1</td>
+			<td>upgraded to ES 1.2.1</td>
+		</tr>
+		<tr>
 			<td>0.0.16</td>
 			<td>1.0.0</td>
 			<td>fix for https://github.com/triforkams/geohash-facet/issues/9</td>
