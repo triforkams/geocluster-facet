@@ -3,6 +3,7 @@ package nl.trifork.elasticsearch.facet.geohash;
 import java.io.IOException;
 
 import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.index.fielddata.GeoPointValues;
 import org.elasticsearch.index.fielddata.IndexGeoPointFieldData;
 import org.elasticsearch.index.fielddata.BytesValues;
@@ -59,18 +60,17 @@ public class GeohashFacetExecutor extends FacetExecutor {
             final int length_ = ids.setDocument(docId);
             final int length = values.setDocument(docId);
             
-            String _id;
+            TypeAndId typeAndId = null;
             if (length_ > 0) {
-            	_id = Uid.idFromUid(ids.nextValue().utf8ToString());
-            } else {
-            	_id = new String();
+                BytesRef[] bytesRefs =  Uid.splitUidIntoTypeAndId(ids.nextValue());
+                typeAndId = new TypeAndId(bytesRefs[0].utf8ToString(), bytesRefs[1].utf8ToString());
             }
             
             for (int i = 0; i < length; i++) {
             	GeoPoint gp = GeoPoints.copy(values.nextValue()); // nextValue() may recycle GeoPoint instances!
             	
                 if(showDocumentId) {
-                    builder.add(_id, gp);
+                    builder.add(typeAndId, gp);
                 } else {
                     builder.add(gp);
                 }

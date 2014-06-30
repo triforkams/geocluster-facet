@@ -156,7 +156,8 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 		final XContentBuilderString LON = new XContentBuilderString("lon");
 		final XContentBuilderString GEOHASH_CELL = new XContentBuilderString("geohash_cell");
         final XContentBuilderString DOC_ID = new XContentBuilderString("doc_id");
-	}
+        final XContentBuilderString DOC_TYPE = new XContentBuilderString("doc_type");
+    }
 
 	private void toXContent(Cluster cluster, XContentBuilder builder) throws IOException {
 		builder.startObject();
@@ -166,7 +167,8 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 			toXContent(cluster.bounds().topLeft(), Fields.TOP_LEFT, builder);
 			toXContent(cluster.bounds().bottomRight(), Fields.BOTTOM_RIGHT, builder);
 		} else if (showDocuments) {
-			builder.field(Fields.DOC_ID, cluster.docId());
+			builder.field(Fields.DOC_TYPE, cluster.typeAndId().type());
+			builder.field(Fields.DOC_ID, cluster.typeAndId().id());
         }
         if (showGeohashCell) {
             addGeohashCell(cluster, builder);

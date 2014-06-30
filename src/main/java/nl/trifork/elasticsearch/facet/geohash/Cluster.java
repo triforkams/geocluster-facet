@@ -19,7 +19,7 @@ public class Cluster {
     private int size;
 	private GeoPoint center;
     private long clusterGeohash;
-    private String docId;
+    private TypeAndId typeAndId;
 	private BoundingBox bounds;
 
     /**
@@ -31,8 +31,8 @@ public class Cluster {
 
 	}
 
-	public Cluster(GeoPoint point, long clusterGeohash, int geohashBits, String docId) {
-        this(1, point, clusterGeohash, geohashBits, docId, new BoundingBox(point));
+	public Cluster(GeoPoint point, long clusterGeohash, int geohashBits, TypeAndId typeAndId) {
+        this(1, point, clusterGeohash, geohashBits, typeAndId, new BoundingBox(point));
 
 	}
 
@@ -40,14 +40,14 @@ public class Cluster {
      * @param clusterGeohash - geohash of the cluster, obtained from {@link nl.trifork.elasticsearch.facet.geohash.BinaryGeoHashUtils#encodeAsLong(org.elasticsearch.common.geo.GeoPoint, int)}
      * @param geohashBits - number of meaningful bits of the geohash. Values: 0 to {@link nl.trifork.elasticsearch.facet.geohash.BinaryGeoHashUtils#MAX_PREFIX_LENGTH}
      */
-	public Cluster(int size, GeoPoint center, long clusterGeohash, int geohashBits, String docId, BoundingBox bounds) {
+	public Cluster(int size, GeoPoint center, long clusterGeohash, int geohashBits, TypeAndId typeAndId, BoundingBox bounds) {
         Preconditions.checkArgument(clusterGeohash == BinaryGeoHashUtils.encodeAsLong(center, geohashBits));
 
 		this.size = size;
 		this.center = center;
         this.clusterGeohash = clusterGeohash;
         this.geohashBits = geohashBits;
-        this.docId = docId;
+        this.typeAndId = typeAndId;
 		this.bounds = bounds;
 	}
 
@@ -103,8 +103,8 @@ public class Cluster {
         return geohashBits;
     }
 
-    public String docId() {
-        return docId;
+    public TypeAndId typeAndId() {
+        return typeAndId;
     }
 
     public static Cluster readFrom(StreamInput in) throws IOException {
@@ -122,8 +122,8 @@ public class Cluster {
             boolean hasDocId = in.readBoolean();
             if (hasDocId) {
 
-                String docId = in.readString();
-                return new Cluster(size, center, clusterGeohash, geohashBits, docId, bounds);
+                TypeAndId typeAndId1 = TypeAndId.readFrom(in);
+                return new Cluster(size, center, clusterGeohash, geohashBits, typeAndId1, bounds);
             } else {
 
                 return new Cluster(size, center, clusterGeohash, geohashBits, bounds);
@@ -139,11 +139,11 @@ public class Cluster {
 		if (size > 1) {
 			bounds.writeTo(out);
 		} else {
-            if (docId == null) {
+            if (typeAndId == null) {
                 out.writeBoolean(false);
             } else {
                 out.writeBoolean(true);
-                out.writeString(docId);
+                typeAndId.writeTo(out);
             }
         }
 	}
@@ -160,7 +160,7 @@ public class Cluster {
         if (size != cluster.size) return false;
         if (!bounds.equals(cluster.bounds)) return false;
         if (!center.equals(cluster.center)) return false;
-        if (docId != null ? !docId.equals(cluster.docId) : cluster.docId != null) return false;
+        if (typeAndId != null ? !typeAndId.equals(cluster.typeAndId) : cluster.typeAndId != null) return false;
 
         return true;
     }
@@ -171,7 +171,7 @@ public class Cluster {
         result = 31 * result + size;
         result = 31 * result + center.hashCode();
         result = 31 * result + (int) (clusterGeohash ^ (clusterGeohash >>> 32));
-        result = 31 * result + (docId != null ? docId.hashCode() : 0);
+        result = 31 * result + (typeAndId != null ? typeAndId.hashCode() : 0);
         result = 31 * result + bounds.hashCode();
         return result;
     }

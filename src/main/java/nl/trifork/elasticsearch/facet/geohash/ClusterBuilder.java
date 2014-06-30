@@ -19,18 +19,18 @@ public class ClusterBuilder {
         this.geohashBits = BinaryGeoHashUtils.MAX_PREFIX_LENGTH - (int) Math.round(factor * BinaryGeoHashUtils.MAX_PREFIX_LENGTH);
 	}
 
-	public ClusterBuilder add(String docId, GeoPoint point) {
+	public ClusterBuilder add(TypeAndId typeAndId, GeoPoint point) {
         long geohash = BinaryGeoHashUtils.encodeAsLong(point, geohashBits);
         if (clusters.containsKey(geohash)) {
             clusters.get(geohash).add(point);
         }
         else {
-            if (docId == null) {
+            if (typeAndId == null) {
 
                 clusters.put(geohash, new Cluster(point, geohash, geohashBits));
             } else {
 
-                clusters.put(geohash, new Cluster(point, geohash, geohashBits, docId));
+                clusters.put(geohash, new Cluster(point, geohash, geohashBits, typeAndId));
             }
         }
 		return this;
