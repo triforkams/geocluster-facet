@@ -116,10 +116,10 @@ Parameters
 </table>
 
 
-Example
--------
+Index configuration
+-------------------
 
-Mapping: all you need is to declare the field containing the location as a type `geo_point`.
+In the mapping, you need to declare the field containing the location as a type `geo_point`.
 
 ```javascript
 {
@@ -132,6 +132,9 @@ Mapping: all you need is to declare the field containing the location as a type 
   }
 }
 ```
+
+Querying (HTTP)
+---------------
 
 Example document:
 
@@ -321,6 +324,40 @@ Result:
 }
 ```
 
+Querying (Java)
+---------------
+
+You can also do facet requests using the `GeoFacetBuilder` class included in the library:
+```java
+public class Example {
+
+    public static void main(String[] args) {
+    
+        GeoFacetBuilder facetBuilder = new GeoFacetBuilder("monuments").
+                field("location").
+                factor(0.9)
+                .showGeohashCell(false)
+                .showDocId(true);
+
+        Client client = ... // instantiate
+        
+        SearchResponse response = client.prepareSearch("poi")
+                .setSearchType(SearchType.COUNT)
+                .addFacet(facetBuilder)
+                .execute()
+                .actionGet();
+
+        GeohashFacet geohashFacet = (GeohashFacet) response.getFacets().facetsAsMap().get("monuments");
+        
+        for (Cluster cluster: geohashFacet.getEntries()) {
+        
+            // do something 	
+        }
+    }
+
+}
+
+```
 
 License
 -------
