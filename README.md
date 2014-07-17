@@ -6,7 +6,7 @@ Original project: https://github.com/zenobase/geocluster-facet
 Installation (latest version): run
 
 ```
-bin/plugin --url https://github.com/triforkams/geohash-facet/releases/download/geohash-facet-0.0.12/geohash-facet-0.0.12.jar --install geohash-facet
+bin/plugin --url https://github.com/triforkams/geohash-facet/releases/download/geohash-facet-0.0.17/geohash-facet-0.0.17.jar --install geohash-facet
 ```
 
 
@@ -358,6 +358,84 @@ public class Example {
 }
 
 ```
+
+Size of the cells
+-----------------
+
+The table below shows the size of the cells defined by various values of the `factor` parameter. These data can be useful if you want to find the factor value which returns at most _n_ clusters given a bounding box to search on.
+
+<table>
+    <thead>
+		<tr>
+			<th>Factor</th>
+			<th>Latitude delta (degrees)</th>
+			<th>Longitude delta (degrees)</th>
+		</tr>
+	</thead>
+	<tbody>
+<tr><td>1</td><td>180</td><td>360</td></tr>
+<tr><td>0.98</td><td>180</td><td>180</td></tr>
+<tr><td>0.97</td><td>90</td><td>180</td></tr>
+<tr><td>0.95</td><td>90</td><td>90</td></tr>
+<tr><td>0.93</td><td>45</td><td>90</td></tr>
+<tr><td>0.92</td><td>45</td><td>45</td></tr>
+<tr><td>0.9</td><td>22.5</td><td>45</td></tr>
+<tr><td>0.88</td><td>22.5</td><td>22.5</td></tr>
+<tr><td>0.87</td><td>11.25</td><td>22.5</td></tr>
+<tr><td>0.85</td><td>11.25</td><td>11.25</td></tr>
+<tr><td>0.83</td><td>5.625</td><td>11.25</td></tr>
+<tr><td>0.82</td><td>5.625</td><td>5.625</td></tr>
+<tr><td>0.8</td><td>2.8125</td><td>5.625</td></tr>
+<tr><td>0.78</td><td>2.8125</td><td>2.8125</td></tr>
+<tr><td>0.77</td><td>1.40625</td><td>2.8125</td></tr>
+<tr><td>0.75</td><td>1.40625</td><td>1.40625</td></tr>
+<tr><td>0.73</td><td>0.703125</td><td>1.40625</td></tr>
+<tr><td>0.72</td><td>0.703125</td><td>0.703125</td></tr>
+<tr><td>0.7</td><td>0.3515625</td><td>0.703125</td></tr>
+<tr><td>0.68</td><td>0.3515625</td><td>0.3515625</td></tr>
+<tr><td>0.67</td><td>0.17578125</td><td>0.3515625</td></tr>
+<tr><td>0.65</td><td>0.17578125</td><td>0.17578125</td></tr>
+<tr><td>0.63</td><td>0.087890625</td><td>0.17578125</td></tr>
+<tr><td>0.62</td><td>0.087890625</td><td>0.087890625</td></tr>
+<tr><td>0.6</td><td>0.0439453125</td><td>0.087890625</td></tr>
+<tr><td>0.58</td><td>0.0439453125</td><td>0.0439453125</td></tr>
+<tr><td>0.57</td><td>0.02197265625</td><td>0.0439453125</td></tr>
+<tr><td>0.55</td><td>0.02197265625</td><td>0.02197265625</td></tr>
+<tr><td>0.53</td><td>0.01098632813</td><td>0.02197265625</td></tr>
+<tr><td>0.52</td><td>0.01098632813</td><td>0.01098632813</td></tr>
+<tr><td>0.5</td><td>0.005493164063</td><td>0.01098632813</td></tr>
+<tr><td>0.48</td><td>0.005493164063</td><td>0.005493164063</td></tr>
+<tr><td>0.47</td><td>0.002746582031</td><td>0.005493164063</td></tr>
+<tr><td>0.45</td><td>0.002746582031</td><td>0.002746582031</td></tr>
+<tr><td>0.43</td><td>0.001373291016</td><td>0.002746582031</td></tr>
+<tr><td>0.42</td><td>0.001373291016</td><td>0.001373291016</td></tr>
+<tr><td>0.4</td><td>0.0006866455078</td><td>0.001373291016</td></tr>
+<tr><td>0.38</td><td>0.0006866455078</td><td>0.0006866455078</td></tr>
+<tr><td>0.37</td><td>0.0003433227539</td><td>0.0006866455078</td></tr>
+<tr><td>0.35</td><td>0.0003433227539</td><td>0.0003433227539</td></tr>
+<tr><td>0.33</td><td>0.000171661377</td><td>0.0003433227539</td></tr>
+<tr><td>0.32</td><td>0.000171661377</td><td>0.000171661377</td></tr>
+<tr><td>0.3</td><td>0.00008583068848</td><td>0.000171661377</td></tr>
+<tr><td>0.28</td><td>0.00008583068848</td><td>0.00008583068848</td></tr>
+<tr><td>0.27</td><td>0.00004291534424</td><td>0.00008583068848</td></tr>
+<tr><td>0.25</td><td>0.00004291534424</td><td>0.00004291534424</td></tr>
+<tr><td>0.23</td><td>0.00002145767212</td><td>0.00004291534424</td></tr>
+<tr><td>0.22</td><td>0.00002145767212</td><td>0.00002145767212</td></tr>
+<tr><td>0.2</td><td>0.00001072883606</td><td>0.00002145767212</td></tr>
+<tr><td>0.18</td><td>0.00001072883606</td><td>0.00001072883606</td></tr>
+<tr><td>0.17</td><td>0.00000536441803</td><td>0.00001072883606</td></tr>
+<tr><td>0.15</td><td>0.00000536441803</td><td>0.00000536441803</td></tr>
+<tr><td>0.13</td><td>0.000002682209015</td><td>0.00000536441803</td></tr>
+<tr><td>0.12</td><td>0.000002682209015</td><td>0.000002682209015</td></tr>
+<tr><td>0.1</td><td>0.000001341104507</td><td>0.000002682209015</td></tr>
+<tr><td>0.08</td><td>0.000001341104507</td><td>0.000001341104507</td></tr>
+<tr><td>0.07</td><td>0.0000006705522537</td><td>0.000001341104507</td></tr>
+<tr><td>0.05</td><td>0.0000006705522537</td><td>0.0000006705522537</td></tr>
+<tr><td>0.03</td><td>0.0000003352761269</td><td>0.0000006705522537</td></tr>
+<tr><td>0.02</td><td>0.0000003352761269</td><td>0.0000003352761269</td></tr>
+<tr><td>0</td><td>0.0000001676380634</td><td>0.0000003352761269</td></tr>
+        </tbody>
+</table>
 
 License
 -------
