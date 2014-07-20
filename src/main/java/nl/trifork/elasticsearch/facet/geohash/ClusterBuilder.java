@@ -2,7 +2,6 @@ package nl.trifork.elasticsearch.facet.geohash;
 
 import java.util.Map;
 
-import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.common.collect.ImmutableList;
 import org.elasticsearch.common.collect.Maps;
 import org.elasticsearch.common.geo.GeoPoint;

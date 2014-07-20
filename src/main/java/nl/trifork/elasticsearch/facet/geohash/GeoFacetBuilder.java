@@ -1,19 +1,10 @@
 package nl.trifork.elasticsearch.facet.geohash;
 
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import java.io.IOException;
+
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilderException;
 import org.elasticsearch.search.facet.FacetBuilder;
-import org.elasticsearch.search.facet.terms.TermsFacet;
-
-import java.io.IOException;
-import java.util.Map;
 
 public class GeoFacetBuilder extends FacetBuilder {
     private String fieldName;
