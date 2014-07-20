@@ -15,8 +15,8 @@ public class ClusterBuilder {
 	private final int geohashBits;
 	private final Map<Long, Cluster> clusters = Maps.newHashMap();
 
-	public ClusterBuilder(double factor) {
-        this.geohashBits = BinaryGeoHashUtils.MAX_PREFIX_LENGTH - (int) Math.round(factor * BinaryGeoHashUtils.MAX_PREFIX_LENGTH);
+	public ClusterBuilder(int precisionBits) {
+        this.geohashBits = precisionBits;
 	}
 
 	public ClusterBuilder add(TypeAndId typeAndId, GeoPoint point) {

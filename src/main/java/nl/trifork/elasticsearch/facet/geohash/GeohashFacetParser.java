@@ -48,6 +48,7 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
 
 		String fieldName = null;
 		double factor = 0.1;
+		int precisionBits = -1;
         boolean showGeohashCell = false;
         boolean showDocumentId = false;
 
@@ -61,6 +62,8 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
 					fieldName = parser.text();
 				} else if ("factor".equals(currentName)) {
 					factor = parser.doubleValue();
+				} else if ("precision_bits".equals(currentName)) {
+					precisionBits = parser.intValue();
 				} else if ("show_geohash_cell".equals(currentName)) {
 					showGeohashCell = parser.booleanValue();
 				} else if ("show_doc_id".equals(currentName)) {
@@ -69,9 +72,17 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
 			}
 		}
 
-		if (factor < 0.0 || factor > 1.0) {
-			throw new FacetPhaseExecutionException(facetName, "value [" + factor + "] is not in range [0.0, 1.0]");
+		if (precisionBits != -1) {
+			if (precisionBits < 0.0 || precisionBits > BinaryGeoHashUtils.MAX_PREFIX_LENGTH) {
+				throw new FacetPhaseExecutionException(facetName, "precision_bits value [" + precisionBits + "] is not in range [0, " + BinaryGeoHashUtils.MAX_PREFIX_LENGTH + "]");
+			}
+		} else {
+			if (factor < 0.0 || factor > 1.0) {
+				throw new FacetPhaseExecutionException(facetName, "factor value [" + factor + "] is not in range [0.0, 1.0]");
+			}
+			precisionBits = BinaryGeoHashUtils.MAX_PREFIX_LENGTH - (int) Math.round(factor * BinaryGeoHashUtils.MAX_PREFIX_LENGTH);
 		}
+
 		FieldMapper<?> fieldMapper = context.smartNameFieldMapper(fieldName);
         if (fieldMapper == null) {
             throw new FacetPhaseExecutionException(facetName, "failed to find mapping for [" + fieldName + "]");
@@ -83,6 +94,6 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
             throw new FacetPhaseExecutionException(facetName, "failed to find mapping for [_id]");
         }
         IndexFieldData<?> idIndexFieldData = context.fieldData().getForField(idFieldMapper);
-		return new GeohashFacetExecutor(indexFieldData, idIndexFieldData, factor, showGeohashCell, showDocumentId);
+		return new GeohashFacetExecutor(indexFieldData, idIndexFieldData, precisionBits, showGeohashCell, showDocumentId);
 	}
 }

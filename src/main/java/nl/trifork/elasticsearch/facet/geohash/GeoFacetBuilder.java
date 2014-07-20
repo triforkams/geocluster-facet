@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class GeoFacetBuilder extends FacetBuilder {
     private String fieldName;
-    private double factor;
+    private int precisionBits;
     private boolean showGeohashCell;
     private boolean showDocId;
 
@@ -48,8 +48,8 @@ public class GeoFacetBuilder extends FacetBuilder {
         return this;
     }
 
-    public GeoFacetBuilder factor(double factor) {
-        this.factor = factor;
+    public GeoFacetBuilder precisionBits(int precisionBits) {
+        this.precisionBits = precisionBits;
         return this;
     }
 
@@ -62,7 +62,7 @@ public class GeoFacetBuilder extends FacetBuilder {
 
         builder.startObject("geohash");
         builder.field("field", fieldName);
-        builder.field("factor", factor);
+        builder.field("precision_bits", precisionBits);
         builder.field("show_geohash_cell", showGeohashCell);
         builder.field("show_doc_id", showDocId);
 
