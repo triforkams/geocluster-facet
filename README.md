@@ -207,6 +207,7 @@ Result:
             "_type" : "geohash",
             "precision_bits" : 6,
             "factor" : 0.9,
+            "clusters_total": 2,
             "clusters" : [ {
                 "total" : 8,
                 "center" : {
@@ -279,6 +280,7 @@ Result:
             "_type" : "geohash",
             "precision_bits" : 6,
             "factor" : 0.9,
+            "clusters_total": 2,
             "clusters" : [ {
                 "total" : 8,
                 "center" : {

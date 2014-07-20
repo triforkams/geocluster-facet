@@ -124,6 +124,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
         builder.field(Fields.PRECISION_BITS, precisionBits);
         double factor = (1.0 * BinaryGeoHashUtils.MAX_PREFIX_LENGTH - precisionBits) / BinaryGeoHashUtils.MAX_PREFIX_LENGTH;
         builder.field(Fields.FACTOR, factor);
+        builder.field(Fields.CLUSTERS_TOTAL, entries.size());
         builder.startArray(Fields.CLUSTERS);
         for (Cluster entry : entries) {
             toXContent(entry, builder);
@@ -150,6 +151,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 		final XContentBuilderString _TYPE = new XContentBuilderString("_type");
 		final XContentBuilderString PRECISION_BITS = new XContentBuilderString("precision_bits");
 		final XContentBuilderString FACTOR = new XContentBuilderString("factor");
+		final XContentBuilderString CLUSTERS_TOTAL = new XContentBuilderString("clusters_total");
 		final XContentBuilderString CLUSTERS = new XContentBuilderString("clusters");
 		final XContentBuilderString TOTAL = new XContentBuilderString("total");
 		final XContentBuilderString CENTER = new XContentBuilderString("center");
