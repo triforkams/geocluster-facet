@@ -50,7 +50,7 @@ public class GeohashFacetExecutor extends FacetExecutor {
 
 		@Override
 		public void setNextReader(AtomicReaderContext context) throws IOException {
-			ids = idIndexFieldData.load(context).getBytesValues(false);
+			ids = idIndexFieldData.load(context).getBytesValues();
 			//ordinals = ids.ordinals();
 			values = indexFieldData.load(context).getGeoPointValues();
 		}
