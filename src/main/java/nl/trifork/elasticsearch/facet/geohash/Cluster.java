@@ -1,10 +1,8 @@
 package nl.trifork.elasticsearch.facet.geohash;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.elasticsearch.common.Preconditions;
-import org.elasticsearch.common.geo.GeoHashUtils;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;

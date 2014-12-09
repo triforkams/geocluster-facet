@@ -101,6 +101,13 @@ Parameters
         	of the level of clustering.</td>
         </tr>
 		<tr>
+            <th>precision_bits</th>
+        	<td>Instead of `factor`, you can also provide the used geohash bits directly
+            (otherwise the `precision_bits` gets internaly computed from the `factor` parameter).
+            Starting from version 0.0.14, the maximal precision is 60 bits.
+            If you supply `factor` and `precision_bits`, only `precision_bits` are used.</td>
+        </tr>
+		<tr>
             <th>show_geohash_cell</th>
         	<td>Boolean. If true, for each cluster included in the reply the coordinates
         	of the corresponding geohash cell are provided (top left and bottom right corner.
@@ -198,7 +205,9 @@ Result:
     "facets" : {
         "places" : {
             "_type" : "geohash",
+            "precision_bits" : 6,
             "factor" : 0.9,
+            "clusters_total": 2,
             "clusters" : [ {
                 "total" : 8,
                 "center" : {
@@ -242,7 +251,7 @@ Query with show_geohash_cell enabled:
         "places" : {
             "geohash" : {
                 "field" : "location",
-                "factor" : 0.9,
+                "precision_bits" : 6,
                 "show_geohash_cell" : true
             }
         }
@@ -269,7 +278,9 @@ Result:
     "facets" : {
         "places" : {
             "_type" : "geohash",
+            "precision_bits" : 6,
             "factor" : 0.9,
+            "clusters_total": 2,
             "clusters" : [ {
                 "total" : 8,
                 "center" : {
@@ -333,9 +344,9 @@ public class Example {
 
     public static void main(String[] args) {
     
-        GeoFacetBuilder facetBuilder = new GeoFacetBuilder("monuments").
-                field("location").
-                factor(0.9)
+        GeoFacetBuilder facetBuilder = new GeoFacetBuilder("monuments")
+                .field("location")
+                .factor(0.9)
                 .showGeohashCell(false)
                 .showDocId(true);
 
@@ -367,73 +378,74 @@ The table below shows the size of the cells defined by various values of the `fa
 <table>
     <thead>
 		<tr>
-			<th>Factor</th>
+			<th>Factor (rounded)</th>
+            <th>Precision bits</th>
 			<th>Latitude delta (degrees)</th>
 			<th>Longitude delta (degrees)</th>
 		</tr>
 	</thead>
 	<tbody>
-<tr><td>1</td><td>180</td><td>360</td></tr>
-<tr><td>0.98</td><td>180</td><td>180</td></tr>
-<tr><td>0.97</td><td>90</td><td>180</td></tr>
-<tr><td>0.95</td><td>90</td><td>90</td></tr>
-<tr><td>0.93</td><td>45</td><td>90</td></tr>
-<tr><td>0.92</td><td>45</td><td>45</td></tr>
-<tr><td>0.9</td><td>22.5</td><td>45</td></tr>
-<tr><td>0.88</td><td>22.5</td><td>22.5</td></tr>
-<tr><td>0.87</td><td>11.25</td><td>22.5</td></tr>
-<tr><td>0.85</td><td>11.25</td><td>11.25</td></tr>
-<tr><td>0.83</td><td>5.625</td><td>11.25</td></tr>
-<tr><td>0.82</td><td>5.625</td><td>5.625</td></tr>
-<tr><td>0.8</td><td>2.8125</td><td>5.625</td></tr>
-<tr><td>0.78</td><td>2.8125</td><td>2.8125</td></tr>
-<tr><td>0.77</td><td>1.40625</td><td>2.8125</td></tr>
-<tr><td>0.75</td><td>1.40625</td><td>1.40625</td></tr>
-<tr><td>0.73</td><td>0.703125</td><td>1.40625</td></tr>
-<tr><td>0.72</td><td>0.703125</td><td>0.703125</td></tr>
-<tr><td>0.7</td><td>0.3515625</td><td>0.703125</td></tr>
-<tr><td>0.68</td><td>0.3515625</td><td>0.3515625</td></tr>
-<tr><td>0.67</td><td>0.17578125</td><td>0.3515625</td></tr>
-<tr><td>0.65</td><td>0.17578125</td><td>0.17578125</td></tr>
-<tr><td>0.63</td><td>0.087890625</td><td>0.17578125</td></tr>
-<tr><td>0.62</td><td>0.087890625</td><td>0.087890625</td></tr>
-<tr><td>0.6</td><td>0.0439453125</td><td>0.087890625</td></tr>
-<tr><td>0.58</td><td>0.0439453125</td><td>0.0439453125</td></tr>
-<tr><td>0.57</td><td>0.02197265625</td><td>0.0439453125</td></tr>
-<tr><td>0.55</td><td>0.02197265625</td><td>0.02197265625</td></tr>
-<tr><td>0.53</td><td>0.01098632813</td><td>0.02197265625</td></tr>
-<tr><td>0.52</td><td>0.01098632813</td><td>0.01098632813</td></tr>
-<tr><td>0.5</td><td>0.005493164063</td><td>0.01098632813</td></tr>
-<tr><td>0.48</td><td>0.005493164063</td><td>0.005493164063</td></tr>
-<tr><td>0.47</td><td>0.002746582031</td><td>0.005493164063</td></tr>
-<tr><td>0.45</td><td>0.002746582031</td><td>0.002746582031</td></tr>
-<tr><td>0.43</td><td>0.001373291016</td><td>0.002746582031</td></tr>
-<tr><td>0.42</td><td>0.001373291016</td><td>0.001373291016</td></tr>
-<tr><td>0.4</td><td>0.0006866455078</td><td>0.001373291016</td></tr>
-<tr><td>0.38</td><td>0.0006866455078</td><td>0.0006866455078</td></tr>
-<tr><td>0.37</td><td>0.0003433227539</td><td>0.0006866455078</td></tr>
-<tr><td>0.35</td><td>0.0003433227539</td><td>0.0003433227539</td></tr>
-<tr><td>0.33</td><td>0.000171661377</td><td>0.0003433227539</td></tr>
-<tr><td>0.32</td><td>0.000171661377</td><td>0.000171661377</td></tr>
-<tr><td>0.3</td><td>0.00008583068848</td><td>0.000171661377</td></tr>
-<tr><td>0.28</td><td>0.00008583068848</td><td>0.00008583068848</td></tr>
-<tr><td>0.27</td><td>0.00004291534424</td><td>0.00008583068848</td></tr>
-<tr><td>0.25</td><td>0.00004291534424</td><td>0.00004291534424</td></tr>
-<tr><td>0.23</td><td>0.00002145767212</td><td>0.00004291534424</td></tr>
-<tr><td>0.22</td><td>0.00002145767212</td><td>0.00002145767212</td></tr>
-<tr><td>0.2</td><td>0.00001072883606</td><td>0.00002145767212</td></tr>
-<tr><td>0.18</td><td>0.00001072883606</td><td>0.00001072883606</td></tr>
-<tr><td>0.17</td><td>0.00000536441803</td><td>0.00001072883606</td></tr>
-<tr><td>0.15</td><td>0.00000536441803</td><td>0.00000536441803</td></tr>
-<tr><td>0.13</td><td>0.000002682209015</td><td>0.00000536441803</td></tr>
-<tr><td>0.12</td><td>0.000002682209015</td><td>0.000002682209015</td></tr>
-<tr><td>0.1</td><td>0.000001341104507</td><td>0.000002682209015</td></tr>
-<tr><td>0.08</td><td>0.000001341104507</td><td>0.000001341104507</td></tr>
-<tr><td>0.07</td><td>0.0000006705522537</td><td>0.000001341104507</td></tr>
-<tr><td>0.05</td><td>0.0000006705522537</td><td>0.0000006705522537</td></tr>
-<tr><td>0.03</td><td>0.0000003352761269</td><td>0.0000006705522537</td></tr>
-<tr><td>0.02</td><td>0.0000003352761269</td><td>0.0000003352761269</td></tr>
-<tr><td>0</td><td>0.0000001676380634</td><td>0.0000003352761269</td></tr>
+        <tr><td>1</td><td>0</td><td>180</td><td>360</td></tr>
+        <tr><td>0.98</td><td>1</td><td>180</td><td>180</td></tr>
+        <tr><td>0.97</td><td>2</td><td>90</td><td>180</td></tr>
+        <tr><td>0.95</td><td>3</td><td>90</td><td>90</td></tr>
+        <tr><td>0.93</td><td>4</td><td>45</td><td>90</td></tr>
+        <tr><td>0.92</td><td>5</td><td>45</td><td>45</td></tr>
+        <tr><td>0.9</td><td>6</td><td>22.5</td><td>45</td></tr>
+        <tr><td>0.88</td><td>7</td><td>22.5</td><td>22.5</td></tr>
+        <tr><td>0.87</td><td>8</td><td>11.25</td><td>22.5</td></tr>
+        <tr><td>0.85</td><td>9</td><td>11.25</td><td>11.25</td></tr>
+        <tr><td>0.83</td><td>10</td><td>5.625</td><td>11.25</td></tr>
+        <tr><td>0.82</td><td>11</td><td>5.625</td><td>5.625</td></tr>
+        <tr><td>0.8</td><td>12</td><td>2.8125</td><td>5.625</td></tr>
+        <tr><td>0.78</td><td>13</td><td>2.8125</td><td>2.8125</td></tr>
+        <tr><td>0.77</td><td>14</td><td>1.40625</td><td>2.8125</td></tr>
+        <tr><td>0.75</td><td>15</td><td>1.40625</td><td>1.40625</td></tr>
+        <tr><td>0.73</td><td>16</td><td>0.703125</td><td>1.40625</td></tr>
+        <tr><td>0.72</td><td>17</td><td>0.703125</td><td>0.703125</td></tr>
+        <tr><td>0.7</td><td>18</td><td>0.3515625</td><td>0.703125</td></tr>
+        <tr><td>0.68</td><td>19</td><td>0.3515625</td><td>0.3515625</td></tr>
+        <tr><td>0.67</td><td>20</td><td>0.17578125</td><td>0.3515625</td></tr>
+        <tr><td>0.65</td><td>21</td><td>0.17578125</td><td>0.17578125</td></tr>
+        <tr><td>0.63</td><td>22</td><td>0.087890625</td><td>0.17578125</td></tr>
+        <tr><td>0.62</td><td>23</td><td>0.087890625</td><td>0.087890625</td></tr>
+        <tr><td>0.6</td><td>24</td><td>0.0439453125</td><td>0.087890625</td></tr>
+        <tr><td>0.58</td><td>25</td><td>0.0439453125</td><td>0.0439453125</td></tr>
+        <tr><td>0.57</td><td>26</td><td>0.02197265625</td><td>0.0439453125</td></tr>
+        <tr><td>0.55</td><td>27</td><td>0.02197265625</td><td>0.02197265625</td></tr>
+        <tr><td>0.53</td><td>28</td><td>0.010986328125</td><td>0.02197265625</td></tr>
+        <tr><td>0.52</td><td>29</td><td>0.010986328125</td><td>0.010986328125</td></tr>
+        <tr><td>0.5</td><td>30</td><td>0.0054931640625</td><td>0.010986328125</td></tr>
+        <tr><td>0.48</td><td>31</td><td>0.0054931640625</td><td>0.0054931640625</td></tr>
+        <tr><td>0.47</td><td>32</td><td>0.00274658203125</td><td>0.0054931640625</td></tr>
+        <tr><td>0.45</td><td>33</td><td>0.00274658203125</td><td>0.00274658203125</td></tr>
+        <tr><td>0.43</td><td>34</td><td>0.001373291015625</td><td>0.00274658203125</td></tr>
+        <tr><td>0.42</td><td>35</td><td>0.001373291015625</td><td>0.001373291015625</td></tr>
+        <tr><td>0.4</td><td>36</td><td>0.0006866455078125</td><td>0.001373291015625</td></tr>
+        <tr><td>0.38</td><td>37</td><td>0.0006866455078125</td><td>0.0006866455078125</td></tr>
+        <tr><td>0.37</td><td>38</td><td>0.0003433227539062</td><td>0.0006866455078125</td></tr>
+        <tr><td>0.35</td><td>39</td><td>0.0003433227539062</td><td>0.0003433227539062</td></tr>
+        <tr><td>0.33</td><td>40</td><td>0.0001716613769531</td><td>0.0003433227539062</td></tr>
+        <tr><td>0.32</td><td>41</td><td>0.0001716613769531</td><td>0.0001716613769531</td></tr>
+        <tr><td>0.3</td><td>42</td><td>0.0000858306884766</td><td>0.0001716613769531</td></tr>
+        <tr><td>0.28</td><td>43</td><td>0.0000858306884766</td><td>0.0000858306884766</td></tr>
+        <tr><td>0.27</td><td>44</td><td>0.0000429153442383</td><td>0.0000858306884766</td></tr>
+        <tr><td>0.25</td><td>45</td><td>0.0000429153442383</td><td>0.0000429153442383</td></tr>
+        <tr><td>0.23</td><td>46</td><td>0.0000214576721191</td><td>0.0000429153442383</td></tr>
+        <tr><td>0.22</td><td>47</td><td>0.0000214576721191</td><td>0.0000214576721191</td></tr>
+        <tr><td>0.2</td><td>48</td><td>0.0000107288360596</td><td>0.0000214576721191</td></tr>
+        <tr><td>0.18</td><td>49</td><td>0.0000107288360596</td><td>0.0000107288360596</td></tr>
+        <tr><td>0.17</td><td>50</td><td>0.0000053644180298</td><td>0.0000107288360596</td></tr>
+        <tr><td>0.15</td><td>51</td><td>0.0000053644180298</td><td>0.0000053644180298</td></tr>
+        <tr><td>0.13</td><td>52</td><td>0.0000026822090149</td><td>0.0000053644180298</td></tr>
+        <tr><td>0.12</td><td>53</td><td>0.0000026822090149</td><td>0.0000026822090149</td></tr>
+        <tr><td>0.1</td><td>54</td><td>0.0000013411045074</td><td>0.0000026822090149</td></tr>
+        <tr><td>0.08</td><td>55</td><td>0.0000013411045074</td><td>0.0000013411045074</td></tr>
+        <tr><td>0.07</td><td>56</td><td>0.0000006705522537</td><td>0.0000013411045074</td></tr>
+        <tr><td>0.05</td><td>57</td><td>0.0000006705522537</td><td>0.0000006705522537</td></tr>
+        <tr><td>0.03</td><td>58</td><td>0.0000003352761269</td><td>0.0000006705522537</td></tr>
+        <tr><td>0.02</td><td>59</td><td>0.0000003352761269</td><td>0.0000003352761269</td></tr>
+        <tr><td>0.0</td><td>60</td><td>0.0000001676380634</td><td>0.0000003352761269</td></tr>
         </tbody>
 </table>
 

@@ -2,7 +2,6 @@ package nl.trifork.elasticsearch.facet.geohash;
 
 import java.util.Map;
 
-import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.common.collect.ImmutableList;
 import org.elasticsearch.common.collect.Maps;
 import org.elasticsearch.common.geo.GeoPoint;
@@ -15,8 +14,8 @@ public class ClusterBuilder {
 	private final int geohashBits;
 	private final Map<Long, Cluster> clusters = Maps.newHashMap();
 
-	public ClusterBuilder(double factor) {
-        this.geohashBits = BinaryGeoHashUtils.MAX_PREFIX_LENGTH - (int) Math.round(factor * BinaryGeoHashUtils.MAX_PREFIX_LENGTH);
+	public ClusterBuilder(int precisionBits) {
+        this.geohashBits = precisionBits;
 	}
 
 	public ClusterBuilder add(TypeAndId typeAndId, GeoPoint point) {

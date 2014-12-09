@@ -8,7 +8,6 @@ import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.bytes.HashedBytesArray;
 import org.elasticsearch.common.collect.ImmutableList;
 import org.elasticsearch.common.collect.Lists;
-import org.elasticsearch.common.geo.GeoHashUtils;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -33,7 +32,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 		Streams.registerStream(STREAM, STREAM_TYPE);
 	}
 
-	private double factor;
+	private int precisionBits;
     private boolean showGeohashCell;
     private boolean showDocuments;
 	private List<Cluster> entries;
@@ -42,9 +41,9 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 
 	}
 
-	public InternalGeohashFacet(String name, double factor, boolean showGeohashCell, boolean showDocuments, List<Cluster> entries) {
+	public InternalGeohashFacet(String name, int precisionBits, boolean showGeohashCell, boolean showDocuments, List<Cluster> entries) {
 		super(name);
-		this.factor = factor;
+		this.precisionBits = precisionBits;
         this.showGeohashCell = showGeohashCell;
         this.showDocuments = showDocuments;
 		this.entries = entries;
@@ -74,7 +73,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 	public Facet reduce(ReduceContext context) {
 		ClusterReducer reducer = new ClusterReducer();
 		List<Cluster> reduced = reducer.reduce(flatMap(context.facets()));
-		return new InternalGeohashFacet(getName(), factor, showGeohashCell, showDocuments, reduced);
+		return new InternalGeohashFacet(getName(), precisionBits, showGeohashCell, showDocuments, reduced);
 	}
 
 	private List<Cluster> flatMap(Iterable<Facet> facets) {
@@ -94,7 +93,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 	@Override
 	public void readFrom(StreamInput in) throws IOException {
 		super.readFrom(in);
-		factor = in.readDouble();
+		precisionBits = in.readInt();
         showGeohashCell = in .readBoolean();
         showDocuments = in.readBoolean();
         int entriesCount = in.readVInt();
@@ -107,7 +106,7 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 	@Override
 	public void writeTo(StreamOutput out) throws IOException {
 		super.writeTo(out);
-		out.writeDouble(factor);
+		out.writeInt(precisionBits);
         out.writeBoolean(showGeohashCell);
         out.writeBoolean(showDocuments);
 		out.writeVInt(entries.size());
@@ -121,7 +120,10 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject(getName());
         builder.field(Fields._TYPE, TYPE);
+        builder.field(Fields.PRECISION_BITS, precisionBits);
+        double factor = (1.0 * BinaryGeoHashUtils.MAX_PREFIX_LENGTH - precisionBits) / BinaryGeoHashUtils.MAX_PREFIX_LENGTH;
         builder.field(Fields.FACTOR, factor);
+        builder.field(Fields.CLUSTERS_TOTAL, entries.size());
         builder.startArray(Fields.CLUSTERS);
         for (Cluster entry : entries) {
             toXContent(entry, builder);
@@ -131,8 +133,8 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
         return builder;
     }
 
-    public double factor() {
-        return factor;
+    public double precisionBits() {
+        return precisionBits;
     }
 
     public boolean showGeohashCell() {
@@ -146,7 +148,9 @@ public class InternalGeohashFacet extends InternalFacet implements GeohashFacet 
 	private interface Fields {
 
 		final XContentBuilderString _TYPE = new XContentBuilderString("_type");
+		final XContentBuilderString PRECISION_BITS = new XContentBuilderString("precision_bits");
 		final XContentBuilderString FACTOR = new XContentBuilderString("factor");
+		final XContentBuilderString CLUSTERS_TOTAL = new XContentBuilderString("clusters_total");
 		final XContentBuilderString CLUSTERS = new XContentBuilderString("clusters");
 		final XContentBuilderString TOTAL = new XContentBuilderString("total");
 		final XContentBuilderString CENTER = new XContentBuilderString("center");

@@ -1,23 +1,14 @@
 package nl.trifork.elasticsearch.facet.geohash;
 
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import java.io.IOException;
+
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilderException;
 import org.elasticsearch.search.facet.FacetBuilder;
-import org.elasticsearch.search.facet.terms.TermsFacet;
-
-import java.io.IOException;
-import java.util.Map;
 
 public class GeoFacetBuilder extends FacetBuilder {
     private String fieldName;
-    private double factor;
+    private int precisionBits;
     private boolean showGeohashCell;
     private boolean showDocId;
 
@@ -48,8 +39,8 @@ public class GeoFacetBuilder extends FacetBuilder {
         return this;
     }
 
-    public GeoFacetBuilder factor(double factor) {
-        this.factor = factor;
+    public GeoFacetBuilder precisionBits(int precisionBits) {
+        this.precisionBits = precisionBits;
         return this;
     }
 
@@ -62,7 +53,7 @@ public class GeoFacetBuilder extends FacetBuilder {
 
         builder.startObject("geohash");
         builder.field("field", fieldName);
-        builder.field("factor", factor);
+        builder.field("precision_bits", precisionBits);
         builder.field("show_geohash_cell", showGeohashCell);
         builder.field("show_doc_id", showDocId);
 

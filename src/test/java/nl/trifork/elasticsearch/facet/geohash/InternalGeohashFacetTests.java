@@ -18,7 +18,7 @@ public class InternalGeohashFacetTests {
 
         InternalGeohashFacet facet = new InternalGeohashFacet(
                 "name",
-                0.5,
+                30,
                 true,
                 false,
                 Arrays.asList(new Cluster(Places.DENVER,
@@ -34,7 +34,7 @@ public class InternalGeohashFacetTests {
         InternalGeohashFacet deserialized = new InternalGeohashFacet();
         deserialized.readFrom(new BytesStreamInput(byteArrayOutputStream.toByteArray(), false));
 
-        assertThat(deserialized.factor(), is(facet.factor()));
+        assertThat(deserialized.precisionBits(), is(facet.precisionBits()));
         assertThat(deserialized.showGeohashCell(), is(facet.showGeohashCell()));
         assertThat(deserialized.getEntries().size(), is(1));
         assertThat(deserialized.getEntries().get(0).center(), is(Places.DENVER));
