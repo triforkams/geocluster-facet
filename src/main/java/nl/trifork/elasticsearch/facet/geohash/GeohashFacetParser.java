@@ -76,7 +76,7 @@ public class GeohashFacetParser extends AbstractComponent implements FacetParser
         if (fieldMapper == null) {
             throw new FacetPhaseExecutionException(facetName, "failed to find mapping for [" + fieldName + "]");
         }
-        IndexGeoPointFieldData<?> indexFieldData = context.fieldData().getForField(fieldMapper);
+        IndexGeoPointFieldData indexFieldData = context.fieldData().getForField(fieldMapper);
         
         FieldMapper<?> idFieldMapper = context.smartNameFieldMapper("_uid");
         if (idFieldMapper == null) {
