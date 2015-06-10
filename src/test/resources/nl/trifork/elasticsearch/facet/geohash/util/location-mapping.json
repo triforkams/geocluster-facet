@@ -1,0 +1,9 @@
+{
+  "location": {
+    "properties": {
+      "latLon": {
+        "type": "geo_point"
+      }
+    }
+  }
+}
