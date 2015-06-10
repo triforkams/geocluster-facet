@@ -8,20 +8,20 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.GeoBoundingBoxFilterBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import org.testng.annotations.Test;
 
 import javax.inject.Inject;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.equalTo;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:nl/trifork/elasticsearch/facet/geohash/util/elasticSearchHolderContext.xml")
-public class GeohashFacetIT {
+public class GeohashFacetIT extends AbstractTestNGSpringContextTests {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -30,23 +30,32 @@ public class GeohashFacetIT {
 
     @Test
     public void testDataLoaded() throws Exception {
-        long hits = embeddedElasticSearch.getClient().prepareSearch("theindex").get().getHits().totalHits();
-        assertEquals("all data loaded", 10, hits);
+        long hits = embeddedElasticSearch.getClient()
+                .prepareSearch("theindex")
+                .get()
+                .getHits()
+                .totalHits();
+
+        assertThat("all 10 locations loaded", hits, equalTo(10l));
     }
 
     @Test
     public void testFacetSearchWithArithmeticMean() throws Exception {
         GeohashFacet geohashFacet = getFacetFor(54, -1, 50, 2);
-        GeoPoint center = geohashFacet.getEntries().get(0).center();
-        assertEquals("lat", 51.6d, center.getLat(), 0);
-        assertEquals("lon", 0.3d, center.getLon(), 0);
+
+        GeoPoint center = geohashFacet.getEntries()
+                .get(0)
+                .center();
+
+        assertThat("center latitude calculated",  center.getLat(), closeTo(51.6d, 0));
+        assertThat("center longitute calculated",  center.getLon(), closeTo(0.3d, 0));
     }
 
     private GeohashFacet getFacetFor(int topLeftLat, int topLeftLon, int bottomRightLat, int bottomRightLon) {
         SearchRequestBuilder request = getSearchRequest(topLeftLat, topLeftLon, bottomRightLat, bottomRightLon);
         SearchResponse response = request.get();
         GeohashFacet geohashFacet = response.getFacets().facet("location");
-        logger.info(response.toString());
+        logger.debug("ES response: {}", response.toString());
         return geohashFacet;
     }
 
@@ -59,7 +68,9 @@ public class GeohashFacetIT {
     }
 
     private SearchRequestBuilder getSearchRequest(GeoFacetBuilder geoHash, FilteredQueryBuilder filteredQuery) {
-        return embeddedElasticSearch.getClient().prepareSearch(EmbeddedElasticSearch.INDEX).setQuery(filteredQuery)
+        return embeddedElasticSearch.getClient()
+                .prepareSearch(EmbeddedElasticSearch.INDEX_NAME)
+                .setQuery(filteredQuery)
                 .addFacet(geoHash);
     }
 
@@ -69,7 +80,10 @@ public class GeohashFacetIT {
 
     private GeoFacetBuilder getGeohashFacet() {
         return new GeoFacetBuilder(EmbeddedElasticSearch.TYPE)
-                .field("latLon").factor(1).showDocId(true).showGeohashCell(true);
+                .field("latLon")
+                .factor(1)
+                .showDocId(true)
+                .showGeohashCell(true);
     }
 
     private GeoBoundingBoxFilterBuilder getBoundingBox(double topLeftLat, double topLeftLon, double bottomRightLat, double bottomRightLon) {
@@ -77,6 +91,5 @@ public class GeohashFacetIT {
                 .topLeft(topLeftLat, topLeftLon)
                 .bottomRight(bottomRightLat, bottomRightLon);
     }
-
 
 }
