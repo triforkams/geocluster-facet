@@ -1,19 +1,23 @@
 package nl.trifork.elasticsearch.facet.geohash.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
+import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+
+import static org.springframework.util.ResourceUtils.getURL;
 
 @Component
 public class EmbeddedElasticSearch {
@@ -25,35 +29,42 @@ public class EmbeddedElasticSearch {
 
     private Client client;
     private Node node;
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public Client getClient() {
         return client;
     }
 
     @PostConstruct
-    public void start() throws IOException, ExecutionException, InterruptedException {
+    public void startInstance() throws IOException, ExecutionException, InterruptedException {
         node = createLocalNode();
         client = node.client();
-        objectMapper = new ObjectMapper();
-
-        LocationList locationList = getLocationList(objectMapper, LOCATION);
 
         createIndex(INDEX);
 
-        String mappingSource = Resources.toString(ResourceUtils.getURL(LOCATION_MAPPING), Charsets.UTF_8);
-        client.admin().indices().preparePutMapping(INDEX).setType(TYPE).setSource(mappingSource).get();
+        String mapping = readFile(LOCATION_MAPPING);
+        addFacetMapping(mapping);
+        addLocationsToIndex(getLocationList(objectMapper, LOCATION));
 
+        refreshIndex();
+    }
+
+    private RefreshResponse refreshIndex() {
+        return client.admin().indices().prepareRefresh(INDEX).get();
+    }
+
+    private void addLocationsToIndex(LocationList locationList) throws JsonProcessingException {
         for (Location location : locationList.getLocations()) {
             client.prepareIndex(INDEX, TYPE).setSource(objectMapper.writeValueAsString(location)).get().getId();
         }
-
-        client.admin().indices().prepareRefresh(INDEX).get();
     }
 
-    @PreDestroy
-    public void stop() {
-        node.close();
+    private PutMappingResponse addFacetMapping(String mappingSource) {
+        return client.admin().indices().preparePutMapping(INDEX).setType(TYPE).setSource(mappingSource).get();
+    }
+
+    private String readFile(String locationMapping) throws IOException {
+        return Resources.toString(getURL(locationMapping), Charsets.UTF_8);
     }
 
     private void createIndex(String index) {
@@ -64,7 +75,7 @@ public class EmbeddedElasticSearch {
     }
 
     private LocationList getLocationList(ObjectMapper objectMapper, String resourceLocation) throws IOException {
-        return objectMapper.readValue(ResourceUtils.getURL(resourceLocation), LocationList.class);
+        return objectMapper.readValue(getURL(resourceLocation), LocationList.class);
     }
 
     private Node createLocalNode() {
@@ -72,6 +83,11 @@ public class EmbeddedElasticSearch {
                 .settings(ImmutableSettings.settingsBuilder()
                         .put("index.store.type", "memory")
                         .put("path.data", "target/data")).node().start();
+    }
+
+    @PreDestroy
+    public void closeInstance() {
+        node.close();
     }
 
 }

@@ -25,7 +25,6 @@ public class GeohashFacetIT {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @SuppressWarnings("UnusedDeclaration")
     @Inject
     private EmbeddedElasticSearch embeddedElasticSearch;
 
