@@ -6,7 +6,7 @@ Original project: https://github.com/zenobase/geocluster-facet
 Installation (latest version): run
 
 ```
-bin/plugin --url https://github.com/triforkams/geohash-facet/releases/download/geohash-facet-0.0.17/geohash-facet-0.0.17.jar --install geohash-facet
+bin/plugin --url https://github.com/triforkams/geohash-facet/releases/download/geohash-facet-0.0.17/geohash-facet-0.0.19.jar --install geohash-facet
 ```
 
 
@@ -24,6 +24,16 @@ Versions
 		</tr>
 	</thead>
 	<tbody>
+		<tr>
+			<td>0.0.19</td>
+			<td>1.4.1</td>
+			<td>upgraded to ES 1.4.1</td>
+		</tr>
+		<tr>
+			<td>0.0.18</td>
+			<td>1.3.6</td>
+			<td>upgraded to ES 1.3.6</td>
+		</tr>
 		<tr>
 			<td>0.0.17</td>
 			<td>1.2.1</td>
